@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2d5a3d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="鲸鱼工作台">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%232d5a3d'/%3E%3Ctext x='96' y='130' font-size='100' text-anchor='middle' fill='white'%3E🐳%3C/text%3E%3C/svg%3E">
+  <title>鲸鱼工作台</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 首页 -->
+    <div class="page active" id="page-home">
+      <!-- 等级条 -->
+      <div class="level-bar" id="level-bar">
+        <div class="level-row">
+          <div class="level-badge">
+            <span class="level-num" id="level-num">Lv.1</span>
+          </div>
+          <div class="points-display">
+            <div class="points-num" id="points-num">0</div>
+            <div class="points-label">可用积分</div>
+          </div>
+        </div>
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-fill" id="xp-bar-fill" style="width: 0%"></div>
+        </div>
+        <div class="xp-text" id="xp-text">0 / 100 XP</div>
+        <div class="streak-row" id="streak-row">
+          <span class="streak-fire">🔥</span>
+          <span class="streak-text" id="streak-text">连续打卡 0 天</span>
+        </div>
+      </div>
+
+      <!-- 特殊日期横幅 -->
+      <div class="special-day-banner hidden" id="special-banner"></div>
+
+      <!-- 每日挑战 -->
+      <div class="daily-challenge" id="daily-challenge">
+        <span class="challenge-icon">🎯</span>
+        <div class="challenge-text">
+          <div class="challenge-title">今日挑战</div>
+          <div class="challenge-desc" id="challenge-desc">加载中...</div>
+        </div>
+        <div class="challenge-reward" id="challenge-reward">+0</div>
+      </div>
+
+      <!-- 任务切换 Tab -->
+      <div class="tab-switch">
+        <button class="active" data-period="daily">今日</button>
+        <button data-period="weekly">本周</button>
+        <button data-period="monthly">本月</button>
+      </div>
+
+      <!-- 任务列表 -->
+      <div class="task-section">
+        <div class="task-list-header">
+          <div class="task-list-title">
+            <span id="task-list-icon">📋</span>
+            <span id="task-list-title">今日任务</span>
+          </div>
+          <div class="completion-rate" id="completion-rate">
+            <span class="rate-num">0</span> / 0 完成
+          </div>
+        </div>
+        <div id="task-list"></div>
+        <button class="add-btn" id="add-task-btn">
+          <span>+</span>
+          <span>添加任务</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 奖励抽奖页 -->
+    <div class="page" id="page-rewards">
+      <!-- 积分显示 -->
+      <div class="level-bar">
+        <div class="level-row">
+          <div class="level-badge">
+            <span class="level-num" id="rewards-level">Lv.1</span>
+          </div>
+          <div class="points-display">
+            <div class="points-num" id="rewards-points">0</div>
+            <div class="points-label">可用积分</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 抽奖 -->
+      <div class="lottery-section mt-4" id="lottery-section">
+        <div class="lottery-title">🎰 积分抽奖</div>
+        <div class="lottery-count" id="lottery-count">剩余抽奖机会：0 次</div>
+        <button class="lottery-btn" id="lottery-btn">抽奖</button>
+        <div class="lottery-result" id="lottery-result"></div>
+      </div>
+
+      <!-- 奖励清单 -->
+      <div class="task-list-header mt-4">
+        <div class="task-list-title">🎁 奖励清单</div>
+      </div>
+      <div id="reward-list"></div>
+      <button class="add-btn" id="add-reward-btn">
+        <span>+</span>
+        <span>添加奖励</span>
+      </button>
+
+      <!-- 道具栏 -->
+      <div class="task-list-header mt-4">
+        <div class="task-list-title">🎒 我的道具</div>
+      </div>
+      <div class="inventory-grid" id="inventory-grid"></div>
+
+      <!-- 兑换记录 -->
+      <div class="task-list-header mt-4">
+        <div class="task-list-title">📝 兑换记录</div>
+      </div>
+      <div id="exchange-list"></div>
+    </div>
+
+    <!-- 统计页 -->
+    <div class="page" id="page-stats">
+      <!-- 完成率统计 -->
+      <div class="stat-card">
+        <div class="stat-title">📊 完成率</div>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="stat-daily-rate">0%</div>
+            <div class="stat-label">今日</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-weekly-rate">0%</div>
+            <div class="stat-label">本周</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-monthly-rate">0%</div>
+            <div class="stat-label">本月</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 积分趋势 -->
+      <div class="stat-card">
+        <div class="stat-title">📈 积分趋势（近7天）</div>
+        <div class="chart-container">
+          <canvas id="chart-points"></canvas>
+        </div>
+      </div>
+
+      <!-- 分类分布 -->
+      <div class="stat-card">
+        <div class="stat-title">🏷️ 分类分布</div>
+        <div class="chart-container">
+          <canvas id="chart-categories"></canvas>
+        </div>
+        <div id="category-legend"></div>
+      </div>
+
+      <!-- 徽章墙 -->
+      <div class="stat-card">
+        <div class="stat-title">🏆 成就徽章</div>
+        <div class="badge-grid" id="badge-grid"></div>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-page="home">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">首页</span>
+      </button>
+      <button class="nav-item" data-page="rewards">
+        <span class="nav-icon">🎁</span>
+        <span class="nav-label">奖励</span>
+      </button>
+      <button class="nav-item" data-page="stats">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">统计</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- 任务编辑弹窗 -->
+  <div class="modal-overlay" id="task-modal">
+    <div class="modal">
+      <div class="modal-title" id="task-modal-title">添加任务</div>
+      <div class="form-group">
+        <label class="form-label">任务名称</label>
+        <input type="text" class="form-input" id="task-name-input" placeholder="输入任务名称" maxlength="50">
+      </div>
+      <div class="form-group">
+        <label class="form-label">积分值</label>
+        <input type="number" class="form-input" id="task-points-input" placeholder="设置完成可获得的积分" min="1" max="999">
+      </div>
+      <div class="form-group">
+        <label class="form-label">周期</label>
+        <select class="form-select" id="task-period-select">
+          <option value="daily">每日</option>
+          <option value="weekly">每周</option>
+          <option value="monthly">每月</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">分类标签</label>
+        <div class="tag-options" id="tag-options">
+          <button class="tag-option active" data-tag="学习">学习</button>
+          <button class="tag-option" data-tag="健身">健身</button>
+          <button class="tag-option" data-tag="工作">工作</button>
+          <button class="tag-option" data-tag="生活">生活</button>
+          <button class="tag-option" data-tag="其他">其他</button>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 20px;">
+        <button class="btn btn-ghost" style="flex: 1;" id="task-cancel-btn">取消</button>
+        <button class="btn btn-primary" style="flex: 1;" id="task-save-btn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 进度选择弹窗 -->
+  <div class="modal-overlay" id="progress-modal">
+    <div class="modal">
+      <div class="modal-title">完成进度</div>
+      <p style="text-align: center; color: var(--text-secondary); font-size: var(--fs-sm); margin-bottom: 16px;" id="progress-task-name">任务名称</p>
+      <div class="progress-options">
+        <button class="progress-option" data-progress="30">30%</button>
+        <button class="progress-option" data-progress="50">50%</button>
+        <button class="progress-option" data-progress="80">80%</button>
+        <button class="progress-option" data-progress="100">100%</button>
+      </div>
+      <div style="text-align: center; margin-top: 16px; color: var(--gold); font-weight: 700; font-size: var(--fs-md);" id="progress-points-preview">可得 0 分</div>
+      <button class="btn btn-ghost btn-block mt-4" id="progress-cancel-btn">取消</button>
+    </div>
+  </div>
+
+  <!-- 奖励编辑弹窗 -->
+  <div class="modal-overlay" id="reward-modal">
+    <div class="modal">
+      <div class="modal-title" id="reward-modal-title">添加奖励</div>
+      <div class="form-group">
+        <label class="form-label">奖励名称</label>
+        <input type="text" class="form-input" id="reward-name-input" placeholder="如：一杯奶茶" maxlength="50">
+      </div>
+      <div class="form-group">
+        <label class="form-label">所需积分</label>
+        <input type="number" class="form-input" id="reward-cost-input" placeholder="兑换所需积分" min="1" max="99999">
+      </div>
+      <div class="form-group">
+        <label class="form-label">图标</label>
+        <div class="tag-options" id="reward-icon-options">
+          <button class="tag-option active" data-icon="🧋">🧋</button>
+          <button class="tag-option" data-icon="🎬">🎬</button>
+          <button class="tag-option" data-icon="🍔">🍔</button>
+          <button class="tag-option" data-icon="🛍️">🛍️</button>
+          <button class="tag-option" data-icon="🎮">🎮</button>
+          <button class="tag-option" data-icon="✈️">✈️</button>
+          <button class="tag-option" data-icon="💤">💤</button>
+          <button class="tag-option" data-icon="🎁">🎁</button>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 20px;">
+        <button class="btn btn-ghost" style="flex: 1;" id="reward-cancel-btn">取消</button>
+        <button class="btn btn-primary" style="flex: 1;" id="reward-save-btn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 升级弹窗 -->
+  <div class="levelup-overlay" id="levelup-overlay">
+    <div class="levelup-card">
+      <div class="levelup-content">
+        <div class="levelup-icon">🎉</div>
+        <div class="levelup-title" id="levelup-title">升级！</div>
+        <div class="levelup-subtitle" id="levelup-subtitle">恭喜达成新等级</div>
+        <div class="levelup-reward" id="levelup-reward"></div>
+        <button class="levelup-skip" id="levelup-skip-btn">跳过</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 徽章解锁弹窗 -->
+  <div class="badge-unlock-overlay" id="badge-unlock-overlay">
+    <div class="badge-unlock-card">
+      <div class="badge-unlock-label">🏅 成就解锁</div>
+      <div class="badge-unlock-icon" id="badge-unlock-icon">🏆</div>
+      <div class="badge-unlock-name" id="badge-unlock-name">徽章名称</div>
+      <button class="badge-unlock-close" id="badge-unlock-close-btn">收下</button>
+    </div>
+  </div>
+
+  <!-- 确认弹窗 -->
+  <div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-card">
+      <div class="confirm-text" id="confirm-text">确认操作？</div>
+      <div class="confirm-actions">
+        <button class="confirm-no" id="confirm-no-btn">取消</button>
+        <button class="confirm-yes" id="confirm-yes-btn">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="./lunar.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

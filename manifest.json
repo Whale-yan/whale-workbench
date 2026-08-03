@@ -1,0 +1,22 @@
+{
+  "name": "鲸鱼工作台",
+  "short_name": "鲸鱼工作台",
+  "description": "个人任务积分工作台 - 游戏化自我管理",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f3e8",
+  "theme_color": "#2d5a3d",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%232d5a3d'/%3E%3Ctext x='96' y='130' font-size='100' text-anchor='middle' fill='white'%3E🐳%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%232d5a3d'/%3E%3Ctext x='256' y='340' font-size='260' text-anchor='middle' fill='white'%3E🐳%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
