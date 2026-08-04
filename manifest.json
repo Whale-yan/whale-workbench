@@ -2,7 +2,7 @@
   "name": "鲸鱼工作台",
   "short_name": "鲸鱼工作台",
   "description": "个人任务积分工作台 - 游戏化自我管理",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f5f3e8",

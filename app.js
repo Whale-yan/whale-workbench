@@ -328,7 +328,7 @@ function checkStreakMilestones() {
     data.availablePoints += 50;
     data.totalXP += 50;
     data.doubleCards++;
-    unlockBadge('streak_' + data.streak, '连续打卡' + data.streak + '天', '🔥');
+    unlockBadge('streak_' + data.streak, '连续打卡' + data.streak + '天', '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">');
     showToast('🏆 连续打卡' + data.streak + '天！+50积分 + 双倍卡 + 徽章');
   }
   // 每100天: +100积分
@@ -341,31 +341,31 @@ function checkStreakMilestones() {
   if (data.streak > 0 && data.streak % 365 === 0) {
     data.availablePoints += 365;
     data.totalXP += 365;
-    unlockBadge('streak_' + data.streak, '连续打卡' + data.streak + '天', '🌟');
+    unlockBadge('streak_' + data.streak, '连续打卡' + data.streak + '天', '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">');
     showToast('🎉🎉 连续打卡' + data.streak + '天！+365积分 + 专属徽章');
   }
 }
 
 /* ===== 徽章系统 ===== */
 var BADGE_DEFS = [
-  { id: 'first_task', name: '初次完成', icon: '🌱', desc: '完成第一个任务' },
-  { id: 'streak_7', name: '一周坚持', icon: '🔥', desc: '连续打卡7天' },
-  { id: 'streak_14', name: '两周坚持', icon: '🔥', desc: '连续打卡14天' },
-  { id: 'streak_21', name: '三周坚持', icon: '🔥', desc: '连续打卡21天' },
-  { id: 'streak_30', name: '月度坚持', icon: '🏆', desc: '连续打卡30天' },
-  { id: 'streak_60', name: '双月坚持', icon: '🏆', desc: '连续打卡60天' },
-  { id: 'streak_90', name: '季度坚持', icon: '🏆', desc: '连续打卡90天' },
-  { id: 'streak_100', name: '百日坚持', icon: '💯', desc: '连续打卡100天' },
-  { id: 'streak_180', name: '半载坚持', icon: '💎', desc: '连续打卡180天' },
-  { id: 'streak_365', name: '年度坚持', icon: '🌟', desc: '连续打卡365天' },
-  { id: 'first_reward', name: '首次兑换', icon: '🎁', desc: '兑换第一个奖励' },
-  { id: 'first_lottery', name: '初次抽奖', icon: '🎰', desc: '首次使用积分抽奖' },
-  { id: 'points_500', name: '积分小成', icon: '🪙', desc: '累计获得500积分' },
-  { id: 'points_1000', name: '积分中成', icon: '🪙', desc: '累计获得1000积分' },
-  { id: 'points_5000', name: '积分大成', icon: '💎', desc: '累计获得5000积分' },
-  { id: 'level_10', name: '十级达成', icon: '⭐', desc: '达到10级' },
-  { id: 'level_20', name: '二十级达成', icon: '⭐', desc: '达到20级' },
-  { id: 'level_30', name: '三十级达成', icon: '👑', desc: '达到30级' }
+  { id: 'first_task', name: '初次完成', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">', desc: '完成第一个任务' },
+  { id: 'streak_7', name: '一周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡7天' },
+  { id: 'streak_14', name: '两周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡14天' },
+  { id: 'streak_21', name: '三周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡21天' },
+  { id: 'streak_30', name: '月度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡30天' },
+  { id: 'streak_60', name: '双月坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡60天' },
+  { id: 'streak_90', name: '季度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡90天' },
+  { id: 'streak_100', name: '百日坚持', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡100天' },
+  { id: 'streak_180', name: '半载坚持', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡180天' },
+  { id: 'streak_365', name: '年度坚持', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡365天' },
+  { id: 'first_reward', name: '首次兑换', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '兑换第一个奖励' },
+  { id: 'first_lottery', name: '初次抽奖', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '首次使用积分抽奖' },
+  { id: 'points_500', name: '积分小成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">', desc: '累计获得500积分' },
+  { id: 'points_1000', name: '积分中成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">', desc: '累计获得1000积分' },
+  { id: 'points_5000', name: '积分大成', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '累计获得5000积分' },
+  { id: 'level_10', name: '十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '达到10级' },
+  { id: 'level_20', name: '二十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '达到20级' },
+  { id: 'level_30', name: '三十级达成', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '达到30级' }
 ];
 
 function unlockBadge(id, name, icon) {
@@ -379,7 +379,7 @@ function unlockBadge(id, name, icon) {
     data.badges.push({
       id: id,
       name: name || (def ? def.name : id),
-      icon: icon || (def ? def.icon : '🏅'),
+      icon: icon || (def ? def.icon : '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">'),
       unlockedAt: getTodayStr(),
       count: 1
     });
@@ -393,19 +393,19 @@ function unlockBadge(id, name, icon) {
 function checkAutoBadges() {
   // 首次完成任务
   if (data.totalXP > 0 && !data.badges.find(function(b) { return b.id === 'first_task'; })) {
-    unlockBadge('first_task', '初次完成', '🌱');
+    unlockBadge('first_task', '初次完成', '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">');
   }
   // 连续打卡里程碑
   var streakBadges = [
-    { days: 7, id: 'streak_7', name: '一周坚持', icon: '🔥' },
-    { days: 14, id: 'streak_14', name: '两周坚持', icon: '🔥' },
-    { days: 21, id: 'streak_21', name: '三周坚持', icon: '🔥' },
-    { days: 30, id: 'streak_30', name: '月度坚持', icon: '🏆' },
-    { days: 60, id: 'streak_60', name: '双月坚持', icon: '🏆' },
-    { days: 90, id: 'streak_90', name: '季度坚持', icon: '🏆' },
-    { days: 100, id: 'streak_100', name: '百日坚持', icon: '💯' },
-    { days: 180, id: 'streak_180', name: '半载坚持', icon: '💎' },
-    { days: 365, id: 'streak_365', name: '年度坚持', icon: '🌟' }
+    { days: 7, id: 'streak_7', name: '一周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
+    { days: 14, id: 'streak_14', name: '两周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
+    { days: 21, id: 'streak_21', name: '三周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
+    { days: 30, id: 'streak_30', name: '月度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
+    { days: 60, id: 'streak_60', name: '双月坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
+    { days: 90, id: 'streak_90', name: '季度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
+    { days: 100, id: 'streak_100', name: '百日坚持', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
+    { days: 180, id: 'streak_180', name: '半载坚持', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">' },
+    { days: 365, id: 'streak_365', name: '年度坚持', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">' }
   ];
   for (var i = 0; i < streakBadges.length; i++) {
     var sb = streakBadges[i];
@@ -415,9 +415,9 @@ function checkAutoBadges() {
   }
   // 积分里程碑
   var pointBadges = [
-    { pts: 500, id: 'points_500', name: '积分小成', icon: '🪙' },
-    { pts: 1000, id: 'points_1000', name: '积分中成', icon: '🪙' },
-    { pts: 5000, id: 'points_5000', name: '积分大成', icon: '💎' }
+    { pts: 500, id: 'points_500', name: '积分小成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">' },
+    { pts: 1000, id: 'points_1000', name: '积分中成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">' },
+    { pts: 5000, id: 'points_5000', name: '积分大成', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">' }
   ];
   for (var j = 0; j < pointBadges.length; j++) {
     var pb = pointBadges[j];
@@ -427,9 +427,9 @@ function checkAutoBadges() {
   }
   // 等级徽章
   var levelBadges = [
-    { lv: 10, id: 'level_10', name: '十级达成', icon: '⭐' },
-    { lv: 20, id: 'level_20', name: '二十级达成', icon: '⭐' },
-    { lv: 30, id: 'level_30', name: '三十级达成', icon: '👑' }
+    { lv: 10, id: 'level_10', name: '十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
+    { lv: 20, id: 'level_20', name: '二十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
+    { lv: 30, id: 'level_30', name: '三十级达成', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' }
   ];
   for (var k = 0; k < levelBadges.length; k++) {
     var lb = levelBadges[k];
@@ -704,7 +704,7 @@ function doLottery() {
 
   // 首次抽奖徽章
   if (!data.badges.find(function(b) { return b.id === 'first_lottery'; })) {
-    unlockBadge('first_lottery', '初次抽奖', '🎰');
+    unlockBadge('first_lottery', '初次抽奖', '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">');
   }
 
   checkLevelUp();
@@ -733,7 +733,7 @@ function exchangeReward(rewardId) {
 
   // 首次兑换徽章
   if (!data.badges.find(function(b) { return b.id === 'first_reward'; })) {
-    unlockBadge('first_reward', '首次兑换', '🎁');
+    unlockBadge('first_reward', '首次兑换', '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">');
   }
   showToast('🎉 兑换成功：' + reward.name);
 }
@@ -806,8 +806,8 @@ function renderTaskList() {
   var tasks = data.tasks.filter(function(t) { return t.period === period; });
 
   var titleMap = { daily: '今日任务', weekly: '本周任务', monthly: '本月任务' };
-  var iconMap = { daily: '📋', weekly: '📅', monthly: '🗓️' };
-  document.getElementById('task-list-icon').textContent = iconMap[period];
+  var iconMap = { daily: 'checklist.png', weekly: 'notebook.png', monthly: 'book-open.png' };
+  document.getElementById('task-list-icon').src = './assets/icons/' + iconMap[period];
   document.getElementById('task-list-title').textContent = titleMap[period];
 
   // 获取完成记录
@@ -835,7 +835,7 @@ function renderTaskList() {
   // 渲染任务列表
   var listEl = document.getElementById('task-list');
   if (tasks.length === 0) {
-    listEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">还没有任务，点击下方添加吧</div></div>';
+    listEl.innerHTML = '<div class="empty-state"><img src="./assets/icons/notebook.png" class="empty-icon" alt="empty"><div class="empty-text">还没有任务，点击下方添加吧</div></div>';
     return;
   }
 
@@ -873,8 +873,8 @@ function renderTaskList() {
         '</div>' +
       '</div>' +
       '<div class="task-actions">' +
-        '<button class="task-action-btn edit" data-action="edit" data-task-id="' + task.id + '">✎</button>' +
-        '<button class="task-action-btn delete" data-action="delete" data-task-id="' + task.id + '">✕</button>' +
+        '<button class="task-action-btn edit" data-action="edit" data-task-id="' + task.id + '" title="编辑"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>' +
+        '<button class="task-action-btn delete" data-action="delete" data-task-id="' + task.id + '" title="删除"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>' +
       '</div>' +
       progressBar +
     '</div>';
@@ -887,7 +887,7 @@ function renderRewardsPage() {
   // 奖励列表
   var listEl = document.getElementById('reward-list');
   if (data.rewards.length === 0) {
-    listEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🎁</div><div class="empty-text">还没有奖励，添加一个吧</div></div>';
+    listEl.innerHTML = '<div class="empty-state"><img src="./assets/icons/shell.png" class="empty-icon" alt="empty"><div class="empty-text">还没有奖励，添加一个吧</div></div>';
   } else {
     listEl.innerHTML = data.rewards.map(function(r) {
       var canAfford = data.availablePoints >= r.cost;
@@ -899,8 +899,8 @@ function renderRewardsPage() {
         '</div>' +
         '<div class="reward-actions">' +
           '<button class="btn btn-sm ' + (canAfford ? 'btn-primary' : 'btn-secondary') + ' exchange-btn" data-reward-id="' + r.id + '" ' + (canAfford ? '' : 'disabled') + '>兑换</button>' +
-          '<button class="btn btn-sm btn-ghost edit-reward-btn" data-reward-id="' + r.id + '">✎</button>' +
-          '<button class="btn btn-sm btn-danger delete-reward-btn" data-reward-id="' + r.id + '">✕</button>' +
+          '<button class="btn btn-sm btn-ghost edit-reward-btn" data-reward-id="' + r.id + '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>' +
+          '<button class="btn btn-sm btn-danger delete-reward-btn" data-reward-id="' + r.id + '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -918,7 +918,7 @@ function renderRewardsPage() {
 
   // 双倍卡
   invHtml += '<div class="inventory-item ' + (data.doubleCards === 0 && !doubleCardActive ? 'disabled' : '') + '">' +
-    '<div class="inv-icon">⚡</div>' +
+    '<div class="inv-icon"><img src="./assets/icons/lightning.png" class="inv-icon-img" alt="double"></div>' +
     '<div class="inv-name">双倍积分卡</div>' +
     '<div class="inv-count">' + (doubleCardActive ? '使用中' : '×' + data.doubleCards) + '</div>';
   if (data.doubleCards > 0 && !doubleCardActive) {
@@ -928,7 +928,7 @@ function renderRewardsPage() {
 
   // 护盾
   invHtml += '<div class="inventory-item ' + (data.shields === 0 ? 'disabled' : '') + '">' +
-    '<div class="inv-icon">🛡️</div>' +
+    '<div class="inv-icon"><img src="./assets/icons/shield.png" class="inv-icon-img" alt="shield"></div>' +
     '<div class="inv-name">断签护盾</div>' +
     '<div class="inv-count">×' + data.shields + '</div>' +
     '<div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;">自动生效</div>' +
@@ -939,7 +939,7 @@ function renderRewardsPage() {
   // 兑换记录
   var exEl = document.getElementById('exchange-list');
   if (data.exchangeRecords.length === 0) {
-    exEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">暂无兑换记录</div></div>';
+    exEl.innerHTML = '<div class="empty-state"><img src="./assets/icons/notebook.png" class="empty-icon" alt="empty"><div class="empty-text">暂无兑换记录</div></div>';
   } else {
     exEl.innerHTML = data.exchangeRecords.map(function(r) {
       return '<div class="exchange-record">' +
@@ -1237,7 +1237,7 @@ function showLevelUp(level, rewardText) {
 
 function showBadgeUnlock(icon, name) {
   var overlay = document.getElementById('badge-unlock-overlay');
-  document.getElementById('badge-unlock-icon').textContent = icon;
+  document.getElementById('badge-unlock-icon').innerHTML = icon;
   document.getElementById('badge-unlock-name').textContent = name;
   // 延迟显示，避免和升级弹窗冲突
   setTimeout(function() {

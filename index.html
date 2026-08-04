@@ -32,7 +32,7 @@
         </div>
         <div class="xp-text" id="xp-text">0 / 100 XP</div>
         <div class="streak-row" id="streak-row">
-          <span class="streak-fire">🔥</span>
+          <img src="./assets/icons/bell.png" class="streak-icon" alt="streak">
           <span class="streak-text" id="streak-text">连续打卡 0 天</span>
         </div>
       </div>
@@ -42,7 +42,7 @@
 
       <!-- 每日挑战 -->
       <div class="daily-challenge" id="daily-challenge">
-        <span class="challenge-icon">🎯</span>
+        <img src="./assets/icons/star.png" class="challenge-icon" alt="challenge">
         <div class="challenge-text">
           <div class="challenge-title">今日挑战</div>
           <div class="challenge-desc" id="challenge-desc">加载中...</div>
@@ -61,7 +61,7 @@
       <div class="task-section">
         <div class="task-list-header">
           <div class="task-list-title">
-            <span id="task-list-icon">📋</span>
+            <img src="./assets/icons/checklist.png" class="title-icon" alt="tasks" id="task-list-icon">
             <span id="task-list-title">今日任务</span>
           </div>
           <div class="completion-rate" id="completion-rate">
@@ -93,7 +93,7 @@
 
       <!-- 抽奖 -->
       <div class="lottery-section mt-4" id="lottery-section">
-        <div class="lottery-title">🎰 积分抽奖</div>
+        <div class="lottery-title"><img src="./assets/icons/shell.png" class="section-icon" alt="lottery"> 积分抽奖</div>
         <div class="lottery-count" id="lottery-count">剩余抽奖机会：0 次</div>
         <button class="lottery-btn" id="lottery-btn">抽奖</button>
         <div class="lottery-result" id="lottery-result"></div>
@@ -101,7 +101,7 @@
 
       <!-- 奖励清单 -->
       <div class="task-list-header mt-4">
-        <div class="task-list-title">🎁 奖励清单</div>
+        <div class="task-list-title"><img src="./assets/icons/shell.png" class="title-icon" alt="rewards"> 奖励清单</div>
       </div>
       <div id="reward-list"></div>
       <button class="add-btn" id="add-reward-btn">
@@ -111,13 +111,13 @@
 
       <!-- 道具栏 -->
       <div class="task-list-header mt-4">
-        <div class="task-list-title">🎒 我的道具</div>
+        <div class="task-list-title"><img src="./assets/icons/whale-simple.png" class="title-icon" alt="inventory"> 我的道具</div>
       </div>
       <div class="inventory-grid" id="inventory-grid"></div>
 
       <!-- 兑换记录 -->
       <div class="task-list-header mt-4">
-        <div class="task-list-title">📝 兑换记录</div>
+        <div class="task-list-title"><img src="./assets/icons/notebook.png" class="title-icon" alt="records"> 兑换记录</div>
       </div>
       <div id="exchange-list"></div>
     </div>
@@ -126,7 +126,7 @@
     <div class="page" id="page-stats">
       <!-- 完成率统计 -->
       <div class="stat-card">
-        <div class="stat-title">📊 完成率</div>
+        <div class="stat-title"><img src="./assets/icons/checklist.png" class="title-icon" alt="rate"> 完成率</div>
         <div class="stat-grid">
           <div class="stat-item">
             <div class="stat-value" id="stat-daily-rate">0%</div>
@@ -145,7 +145,7 @@
 
       <!-- 积分趋势 -->
       <div class="stat-card">
-        <div class="stat-title">📈 积分趋势（近7天）</div>
+        <div class="stat-title"><img src="./assets/icons/arrow-up.png" class="title-icon" alt="trend"> 积分趋势（近7天）</div>
         <div class="chart-container">
           <canvas id="chart-points"></canvas>
         </div>
@@ -153,7 +153,7 @@
 
       <!-- 分类分布 -->
       <div class="stat-card">
-        <div class="stat-title">🏷️ 分类分布</div>
+        <div class="stat-title"><img src="./assets/icons/book-open.png" class="title-icon" alt="categories"> 分类分布</div>
         <div class="chart-container">
           <canvas id="chart-categories"></canvas>
         </div>
@@ -162,7 +162,7 @@
 
       <!-- 徽章墙 -->
       <div class="stat-card">
-        <div class="stat-title">🏆 成就徽章</div>
+        <div class="stat-title"><img src="./assets/icons/badge-star.png" class="title-icon" alt="badges"> 成就徽章</div>
         <div class="badge-grid" id="badge-grid"></div>
       </div>
     </div>
@@ -170,15 +170,15 @@
     <!-- 底部导航 -->
     <nav class="bottom-nav">
       <button class="nav-item active" data-page="home">
-        <span class="nav-icon">🏠</span>
+        <img src="./assets/icons/whale-simple.png" class="nav-icon" alt="home">
         <span class="nav-label">首页</span>
       </button>
       <button class="nav-item" data-page="rewards">
-        <span class="nav-icon">🎁</span>
+        <img src="./assets/icons/shell.png" class="nav-icon" alt="rewards">
         <span class="nav-label">奖励</span>
       </button>
       <button class="nav-item" data-page="stats">
-        <span class="nav-icon">📊</span>
+        <img src="./assets/icons/arrow-up.png" class="nav-icon" alt="stats">
         <span class="nav-label">统计</span>
       </button>
     </nav>
@@ -273,7 +273,7 @@
   <div class="levelup-overlay" id="levelup-overlay">
     <div class="levelup-card">
       <div class="levelup-content">
-        <div class="levelup-icon">🎉</div>
+        <img src="./assets/icons/badge-star.png" class="levelup-icon" alt="levelup">
         <div class="levelup-title" id="levelup-title">升级！</div>
         <div class="levelup-subtitle" id="levelup-subtitle">恭喜达成新等级</div>
         <div class="levelup-reward" id="levelup-reward"></div>
@@ -285,8 +285,8 @@
   <!-- 徽章解锁弹窗 -->
   <div class="badge-unlock-overlay" id="badge-unlock-overlay">
     <div class="badge-unlock-card">
-      <div class="badge-unlock-label">🏅 成就解锁</div>
-      <div class="badge-unlock-icon" id="badge-unlock-icon">🏆</div>
+      <div class="badge-unlock-label"><img src="./assets/icons/badge-star.png" class="unlock-label-icon" alt="badge"> 成就解锁</div>
+      <div class="badge-unlock-icon" id="badge-unlock-icon"></div>
       <div class="badge-unlock-name" id="badge-unlock-name">徽章名称</div>
       <button class="badge-unlock-close" id="badge-unlock-close-btn">收下</button>
     </div>

@@ -201,12 +201,16 @@ ul, ol { list-style: none; }
 }
 
 .nav-icon {
-  font-size: 22px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
   line-height: 1;
   transition: transform var(--t-bounce);
+  filter: opacity(0.5);
 }
 
 .nav-item.active .nav-icon {
+  filter: opacity(1);
   transform: scale(1.15) translateY(-2px);
 }
 
@@ -425,14 +429,17 @@ ul, ol { list-style: none; }
   width: fit-content;
 }
 
-.streak-fire {
-  font-size: 18px;
-  animation: flame 1.5s ease-in-out infinite alternate;
+.streak-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  animation: bellRing 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes flame {
-  from { transform: scale(1) rotate(-3deg); }
-  to { transform: scale(1.1) rotate(3deg); }
+@keyframes bellRing {
+  from { transform: rotate(-8deg); }
+  to { transform: rotate(8deg); }
 }
 
 .streak-text {
@@ -649,7 +656,10 @@ ul, ol { list-style: none; }
 }
 
 .challenge-icon {
-  font-size: 24px;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
   animation: wiggle 2s ease-in-out infinite;
 }
 
@@ -1029,6 +1039,10 @@ ul, ol { list-style: none; }
 .inv-icon {
   font-size: 32px;
   margin-bottom: var(--sp-1);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .inv-name {
@@ -1141,6 +1155,10 @@ ul, ol { list-style: none; }
 .badge-icon {
   font-size: 36px;
   margin-bottom: var(--sp-1);
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .badge-item.unlocked .badge-icon {
@@ -1228,8 +1246,11 @@ ul, ol { list-style: none; }
 }
 
 .levelup-icon {
-  font-size: 48px;
-  margin-bottom: var(--sp-2);
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin: 0 auto var(--sp-2);
+  display: block;
   animation: levelupBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -1326,6 +1347,10 @@ ul, ol { list-style: none; }
 .badge-unlock-icon {
   font-size: 56px;
   margin-bottom: var(--sp-2);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: badgePop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -1402,8 +1427,11 @@ ul, ol { list-style: none; }
 }
 
 .empty-state .empty-icon {
-  font-size: 40px;
-  margin-bottom: var(--sp-2);
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin: 0 auto var(--sp-2);
+  display: block;
   opacity: 0.5;
 }
 
@@ -1588,4 +1616,66 @@ ul, ol { list-style: none; }
   .badge-grid {
     gap: var(--sp-2);
   }
+}
+
+/* === 图片图标样式 === */
+
+/* 标题行图标（任务列表标题、统计卡片标题等） */
+.title-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* 区块标题图标（抽奖标题等） */
+.section-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* 徽章图标图片 */
+.badge-icon-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+/* 徽章解锁弹窗中的大图标 */
+.badge-unlock-icon .badge-icon-img {
+  width: 56px;
+  height: 56px;
+}
+
+/* 解锁标签中的小图标 */
+.unlock-label-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* 道具栏图标 */
+.inv-icon-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* 任务操作按钮 SVG */
+.task-action-btn svg {
+  display: block;
+}
+
+/* 奖励列表中的图片图标 */
+.reward-icon img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
