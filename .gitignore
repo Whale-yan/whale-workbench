@@ -1,0 +1,26 @@
+.vercel
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# IDE & OS
+.dumate/
+*.log
+
+# Generated comparison files (not for production)
+color-compare.html
+color-compare.png
+color-concept.html
+color-concept.png
+
+# Screenshot files (generated during development)
+screenshot-*.png
+dark-*.png
+
+# Development scripts (not for production)
+fix_*.js
+fix_*.py
+scan_sensitive.js
+remove_white_border.py
+fix_icons_v2.py
