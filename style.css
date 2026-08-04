@@ -468,7 +468,7 @@ ul, ol { list-style: none; }
   border-radius: var(--r-sm);
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: #74c69d;
+  color: #52b788;
   background: transparent;
   transition: all var(--t-fast);
 }
@@ -840,14 +840,14 @@ ul, ol { list-style: none; }
   display: block;
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: #b7e4c7;
+  color: #40916c;
   margin-bottom: var(--sp-2);
 }
 
 .form-input {
   width: 100%;
   padding: var(--sp-3) var(--sp-4);
-  border: 2px solid #d8f3dc;
+  border: 2px solid #b7e4c7;
   border-radius: var(--r-md);
   font-size: var(--fs-base);
   background: #f5f0e8;
@@ -865,7 +865,7 @@ ul, ol { list-style: none; }
 .form-select {
   width: 100%;
   padding: var(--sp-3) var(--sp-4);
-  border: 2px solid rgba(64, 145, 108, 0.3);
+  border: 2px solid #74c69d;
   border-radius: var(--r-md);
   font-size: var(--fs-base);
   background: #f5f0e8;
@@ -893,10 +893,10 @@ ul, ol { list-style: none; }
 .tag-option {
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--r-full);
-  border: 2px solid rgba(64, 145, 108, 0.3);
+  border: 2px solid #74c69d;
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: #74c69d;
+  color: #52b788;
   background: transparent;
   transition: all var(--t-fast);
 }
@@ -918,10 +918,10 @@ ul, ol { list-style: none; }
   flex: 1;
   padding: var(--sp-3) 0;
   border-radius: var(--r-md);
-  border: 2px solid rgba(64, 145, 108, 0.3);
+  border: 2px solid #74c69d;
   font-size: var(--fs-sm);
   font-weight: 700;
-  color: #74c69d;
+  color: #52b788;
   text-align: center;
   transition: all var(--t-fast);
   background: transparent;
@@ -1242,7 +1242,7 @@ ul, ol { list-style: none; }
 .badge-name {
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: #74c69d;
+  color: #52b788;
   line-height: 1.3;
 }
 
