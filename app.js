@@ -291,263 +291,100 @@ function checkStreak() {
     if (diff > 1) {
       // 断签了
       if (data.shields > 0) {
-        // 使用护盾
+        // 使用已有的护盾
         data.shields--;
         showToast('🛡️ 已自动使用护盾，保护连续记录！');
+        saveData();
       } else {
-        // 连续记录清零
-        data.streak = 0;
+        // 没有护盾，弹出兑换弹窗
+        showShieldExchangeModal();
       }
+    }
+  }
+}
+
+/* ===== 断签护盾兑换弹窗 ===== */
+function showShieldExchangeModal() {
+  var overlay = document.getElementById('shield-exchange-overlay');
+  overlay.classList.add('show');
+
+  var confirmBtn = document.getElementById('shield-exchange-confirm-btn');
+  var cancelBtn = document.getElementById('shield-exchange-cancel-btn');
+
+  // 更新积分显示
+  var costEl = overlay.querySelector('.shield-exchange-cost span');
+  if (costEl) {
+    costEl.textContent = '30 积分' + (data.availablePoints >= 30 ? '' : '（积分不足）');
+  }
+
+  var confirmHandler = function() {
+    overlay.classList.remove('show');
+    confirmBtn.removeEventListener('click', confirmHandler);
+    cancelBtn.removeEventListener('click', cancelHandler);
+
+    // 兑换并使用护盾
+    if (data.availablePoints >= 30) {
+      data.availablePoints -= 30;
+      // 记录兑换
+      data.exchangeRecords.unshift({
+        name: '断签护盾',
+        cost: 30,
+        icon: '<img src="./assets/icons/shield.png" class="badge-icon-img" alt="shield">',
+        time: getTodayStr() + ' ' + new Date().toTimeString().slice(0, 5)
+      });
+      if (data.exchangeRecords.length > 20) data.exchangeRecords.length = 20;
       saveData();
-    }
-  }
-}
-
-function onCheckIn() {
-  var today = getTodayStr();
-  if (data.lastCheckIn !== today) {
-    data.streak++;
-    data.lastCheckIn = today;
-    // 检查7天循环奖励
-    if (data.streak % 7 === 0) {
-      // 额外+10积分
-      data.availablePoints += 10;
-      data.totalXP += 10;
+      showToast('🛡️ 已兑换并使用护盾，连续记录保护成功！');
+      render();
+    } else {
+      // 积分不足，断签
+      data.streak = 0;
       saveData();
-      showToast('🔥 连续打卡' + data.streak + '天！额外+10积分');
+      showToast('积分不足，连续记录已中断');
+      render();
     }
-    // 检查里程碑奖励
-    checkStreakMilestones();
-    saveData();
-  }
-}
-
-function checkStreakMilestones() {
-  // 每30天: +50积分 + 双倍卡 + 徽章
-  if (data.streak > 0 && data.streak % 30 === 0) {
-    data.availablePoints += 50;
-    data.totalXP += 50;
-    data.doubleCards++;
-    unlockBadge('streak_' + data.streak, '连续打卡' + data.streak + '天', '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">');
-    showToast('🏆 连续打卡' + data.streak + '天！+50积分 + 双倍卡 + 徽章');
-  }
-  // 每100天: +100积分
-  if (data.streak > 0 && data.streak % 100 === 0) {
-    data.availablePoints += 100;
-    data.totalXP += 100;
-    showToast('🎉 连续打卡' + data.streak + '天！额外+100积分');
-  }
-  // 每365天: +365积分 + 徽章
-  if (data.streak > 0 && data.streak % 365 === 0) {
-    data.availablePoints += 365;
-    data.totalXP += 365;
-    unlockBadge('streak_' + data.streak, '连续打卡' + data.streak + '天', '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">');
-    showToast('🎉🎉 连续打卡' + data.streak + '天！+365积分 + 专属徽章');
-  }
-}
-
-/* ===== 徽章系统 ===== */
-var BADGE_DEFS = [
-  { id: 'first_task', name: '初次完成', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">', desc: '完成第一个任务' },
-  { id: 'streak_7', name: '一周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡7天' },
-  { id: 'streak_14', name: '两周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡14天' },
-  { id: 'streak_21', name: '三周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡21天' },
-  { id: 'streak_30', name: '月度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡30天' },
-  { id: 'streak_60', name: '双月坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡60天' },
-  { id: 'streak_90', name: '季度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡90天' },
-  { id: 'streak_100', name: '百日坚持', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡100天' },
-  { id: 'streak_180', name: '半载坚持', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡180天' },
-  { id: 'streak_365', name: '年度坚持', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡365天' },
-  { id: 'first_reward', name: '首次兑换', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '兑换第一个奖励' },
-  { id: 'first_lottery', name: '初次抽奖', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '首次使用积分抽奖' },
-  { id: 'points_500', name: '积分小成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">', desc: '累计获得500积分' },
-  { id: 'points_1000', name: '积分中成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">', desc: '累计获得1000积分' },
-  { id: 'points_5000', name: '积分大成', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '累计获得5000积分' },
-  { id: 'level_10', name: '十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '达到10级' },
-  { id: 'level_20', name: '二十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '达到20级' },
-  { id: 'level_30', name: '三十级达成', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '达到30级' }
-];
-
-function unlockBadge(id, name, icon) {
-  var existing = data.badges.find(function(b) { return b.id === id; });
-  if (existing) {
-    existing.count++;
-    existing.unlockedAt = getTodayStr();
-  } else {
-    // 尝试从预定义中找
-    var def = BADGE_DEFS.find(function(b) { return b.id === id; });
-    data.badges.push({
-      id: id,
-      name: name || (def ? def.name : id),
-      icon: icon || (def ? def.icon : '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">'),
-      unlockedAt: getTodayStr(),
-      count: 1
-    });
-  }
-  saveData();
-  // 显示解锁弹窗
-  var b = data.badges.find(function(b) { return b.id === id; });
-  showBadgeUnlock(b.icon, b.name);
-}
-
-function checkAutoBadges() {
-  // 首次完成任务
-  if (data.totalXP > 0 && !data.badges.find(function(b) { return b.id === 'first_task'; })) {
-    unlockBadge('first_task', '初次完成', '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">');
-  }
-  // 连续打卡里程碑
-  var streakBadges = [
-    { days: 7, id: 'streak_7', name: '一周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
-    { days: 14, id: 'streak_14', name: '两周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
-    { days: 21, id: 'streak_21', name: '三周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
-    { days: 30, id: 'streak_30', name: '月度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
-    { days: 60, id: 'streak_60', name: '双月坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
-    { days: 90, id: 'streak_90', name: '季度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
-    { days: 100, id: 'streak_100', name: '百日坚持', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
-    { days: 180, id: 'streak_180', name: '半载坚持', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">' },
-    { days: 365, id: 'streak_365', name: '年度坚持', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">' }
-  ];
-  for (var i = 0; i < streakBadges.length; i++) {
-    var sb = streakBadges[i];
-    if (data.streak >= sb.days && !data.badges.find(function(b) { return b.id === sb.id; })) {
-      unlockBadge(sb.id, sb.name, sb.icon);
-    }
-  }
-  // 积分里程碑
-  var pointBadges = [
-    { pts: 500, id: 'points_500', name: '积分小成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">' },
-    { pts: 1000, id: 'points_1000', name: '积分中成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">' },
-    { pts: 5000, id: 'points_5000', name: '积分大成', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">' }
-  ];
-  for (var j = 0; j < pointBadges.length; j++) {
-    var pb = pointBadges[j];
-    if (data.totalXP >= pb.pts && !data.badges.find(function(b) { return b.id === pb.id; })) {
-      unlockBadge(pb.id, pb.name, pb.icon);
-    }
-  }
-  // 等级徽章
-  var levelBadges = [
-    { lv: 10, id: 'level_10', name: '十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
-    { lv: 20, id: 'level_20', name: '二十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
-    { lv: 30, id: 'level_30', name: '三十级达成', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' }
-  ];
-  for (var k = 0; k < levelBadges.length; k++) {
-    var lb = levelBadges[k];
-    var levelInfo = getLevelFromXP(data.totalXP);
-    if (levelInfo.level >= lb.lv && !data.badges.find(function(b) { return b.id === lb.id; })) {
-      unlockBadge(lb.id, lb.name, lb.icon);
-    }
-  }
-}
-
-/* ===== 每日挑战 ===== */
-var CHALLENGE_TYPES = [
-  { type: 'complete_3', desc: '今天完成3个任务', reward: 10 },
-  { type: 'complete_5', desc: '今天完成5个任务', reward: 15 },
-  { type: 'fitness', desc: '完成一个健身类任务', reward: 8 },
-  { type: 'study', desc: '完成一个学习类任务', reward: 8 },
-  { type: 'work', desc: '完成一个工作类任务', reward: 8 },
-  { type: 'clear_all', desc: '清空今日所有任务', reward: 15 },
-  { type: 'monthly', desc: '完成一个每月任务', reward: 12 },
-  { type: 'points_20', desc: '今天获得20积分', reward: 10 },
-  { type: 'points_30', desc: '今天获得30积分', reward: 12 }
-];
-
-function generateDailyChallenge() {
-  var today = getTodayStr();
-  if (data.dailyChallenge && data.dailyChallenge.date === today) return;
-
-  var idx = Math.floor(Math.random() * CHALLENGE_TYPES.length);
-  var challenge = CHALLENGE_TYPES[idx];
-  data.dailyChallenge = {
-    date: today,
-    type: challenge.type,
-    desc: challenge.desc,
-    reward: challenge.reward,
-    done: false
   };
-  saveData();
+
+  var cancelHandler = function() {
+    overlay.classList.remove('show');
+    confirmBtn.removeEventListener('click', confirmHandler);
+    cancelBtn.removeEventListener('click', cancelHandler);
+    // 用户放弃，断签
+    data.streak = 0;
+    saveData();
+    showToast('连续记录已中断');
+    render();
+  };
+
+  confirmBtn.addEventListener('click', confirmHandler);
+  cancelBtn.addEventListener('click', cancelHandler);
 }
 
-function checkDailyChallenge() {
-  if (!data.dailyChallenge || data.dailyChallenge.done) return;
-  var today = getTodayStr();
-  if (data.dailyChallenge.date !== today) return;
-
-  var todayRecords = data.taskRecords[today] || {};
-  var completedTasks = Object.keys(todayRecords).filter(function(tid) {
-    return todayRecords[tid].progress > 0;
-  });
-  var challenge = data.dailyChallenge;
-
-  switch(challenge.type) {
-    case 'complete_3':
-      if (completedTasks.length >= 3) completeDailyChallenge();
-      break;
-    case 'complete_5':
-      if (completedTasks.length >= 5) completeDailyChallenge();
-      break;
-    case 'fitness':
-      if (completedTasks.some(function(tid) {
-        var task = data.tasks.find(function(t) { return t.id === tid; });
-        return task && task.tag === '健身';
-      })) completeDailyChallenge();
-      break;
-    case 'study':
-      if (completedTasks.some(function(tid) {
-        var task = data.tasks.find(function(t) { return t.id === tid; });
-        return task && task.tag === '学习';
-      })) completeDailyChallenge();
-      break;
-    case 'work':
-      if (completedTasks.some(function(tid) {
-        var task = data.tasks.find(function(t) { return t.id === tid; });
-        return task && task.tag === '工作';
-      })) completeDailyChallenge();
-      break;
-    case 'clear_all':
-      var dailyTasks = data.tasks.filter(function(t) { return t.period === 'daily'; });
-      if (dailyTasks.length > 0 && dailyTasks.every(function(t) {
-        return todayRecords[t.id] && todayRecords[t.id].progress > 0;
-      })) completeDailyChallenge();
-      break;
-    case 'monthly':
-      var monthKey = getMonthKey();
-      var monthlyRecs = data.monthlyRecords[monthKey] || {};
-      if (Object.keys(monthlyRecs).some(function(tid) {
-        return monthlyRecs[tid].progress > 0;
-      })) completeDailyChallenge();
-      break;
-    case 'points_20':
-      var earnedToday = data.pointsHistory[today] || 0;
-      if (earnedToday >= 20) completeDailyChallenge();
-      break;
-    case 'points_30':
-      var earnedToday2 = data.pointsHistory[today] || 0;
-      if (earnedToday2 >= 30) completeDailyChallenge();
-      break;
+/* ===== 主动兑换断签护盾 ===== */
+function buyShield() {
+  if (data.availablePoints < 30) {
+    showToast('积分不足（需要30积分）');
+    return;
   }
-}
-
-function completeDailyChallenge() {
-  if (!data.dailyChallenge || data.dailyChallenge.done) return;
-  data.dailyChallenge.done = true;
-  var reward = data.dailyChallenge.reward;
-  var multiplier = getTotalMultiplier();
-  var actualReward = Math.round(reward * multiplier);
-  data.availablePoints += actualReward;
-  data.totalXP += actualReward;
-  // 记录今日积分
-  var today = getTodayStr();
-  data.pointsHistory[today] = (data.pointsHistory[today] || 0) + actualReward;
-  saveData();
-  showToast('🎯 挑战完成！+' + actualReward + '积分');
-  checkLevelUp();
-  checkAutoBadges();
+  showConfirm('确认消耗30积分兑换断签护盾？', function() {
+    data.availablePoints -= 30;
+    data.shields++;
+    data.exchangeRecords.unshift({
+      name: '断签护盾',
+      cost: 30,
+      icon: '<img src="./assets/icons/shield.png" class="badge-icon-img" alt="shield">',
+      time: getTodayStr() + ' ' + new Date().toTimeString().slice(0, 5)
+    });
+    if (data.exchangeRecords.length > 20) data.exchangeRecords.length = 20;
+    saveData();
+    showToast('🛡️ 断签护盾 +1');
+    render();
+  });
 }
 
 /* ===== 积分计算 ===== */
-function awardPoints(basePoints, taskId) {
+function awardTaskPoints(basePoints, taskId) {
+  // 完成任务/挑战获得的积分，同时计入经验值
   var multiplier = getTotalMultiplier();
   var actualPoints = Math.round(basePoints * multiplier);
   data.availablePoints += actualPoints;
@@ -578,6 +415,16 @@ function awardPoints(basePoints, taskId) {
   return actualPoints;
 }
 
+function awardBonusPoints(points, source) {
+  // 抽奖、打卡奖励、里程碑奖励等额外积分，只计入可用积分，不计入经验值
+  data.availablePoints += points;
+  // 记录今日积分
+  var today = getTodayStr();
+  data.pointsHistory[today] = (data.pointsHistory[today] || 0) + points;
+  saveData();
+  return points;
+}
+
 /* ===== 等级升级检查 ===== */
 function checkLevelUp() {
   var oldLevel = data.level;
@@ -600,6 +447,86 @@ function checkLevelUp() {
     saveData();
     checkAutoBadges();
   }
+}
+
+/* ===== 本日未完成任务顺延 ===== */
+function carryOverUnfinishedTasks() {
+  // 获取前一天的日期
+  var yesterday = new Date(getCurrentDay());
+  yesterday.setDate(yesterday.getDate() - 1);
+  var yestStr = formatDate(yesterday);
+
+  // 检查昨天的每日任务记录
+  var yestRecs = data.taskRecords[yestStr] || {};
+  var dailyTasks = data.tasks.filter(function(t) { return t.period === 'daily'; });
+
+  // 遍历昨天的每日任务，把未完成的顺延到今天
+  var today = getTodayStr();
+  var todayRecs = data.taskRecords[today] || {};
+  var hasCarryOver = false;
+
+  dailyTasks.forEach(function(task) {
+    var yestProgress = yestRecs[task.id] ? yestRecs[task.id].progress : 0;
+    var todayProgress = todayRecs[task.id] ? todayRecs[task.id].progress : 0;
+
+    // 如果昨天未完成(进度<100)且今天还没有任何进度记录
+    if (yestProgress < 100 && todayProgress === 0) {
+      todayRecs[task.id] = {
+        progress: 0,
+        points: 0,
+        time: Date.now(),
+        carriedOver: true  // 标记为顺延任务
+      };
+      hasCarryOver = true;
+    }
+  });
+
+  if (hasCarryOver) {
+    data.taskRecords[today] = todayRecs;
+    saveData();
+  }
+}
+
+/* ===== 检查今日任务是否全部完成(总经验>=15) ===== */
+function checkAllDailyTasksCompleted() {
+  var today = getTodayStr();
+  var todayRecs = data.taskRecords[today] || {};
+  var dailyTasks = data.tasks.filter(function(t) { return t.period === 'daily'; });
+
+  // 如果没有任务，不触发
+  if (dailyTasks.length === 0) return false;
+
+  // 检查是否全部完成(进度>=100)
+  var allCompleted = dailyTasks.every(function(t) {
+    return todayRecs[t.id] && todayRecs[t.id].progress >= 100;
+  });
+
+  if (!allCompleted) return false;
+
+  // 计算今日通过完成任务获得的总经验值
+  var totalXPToday = 0;
+  dailyTasks.forEach(function(t) {
+    var rec = todayRecs[t.id];
+    if (rec && rec.progress >= 100) {
+      totalXPToday += rec.points || 0;
+    }
+  });
+
+  // 总经验需大于等于15才触发额外奖励
+  if (totalXPToday >= 15) {
+    // 检查今天是否已领取过全清奖励
+    var todayKey = 'daily_all_done_' + today;
+    if (data[todayKey]) return false;  // 今天已领取过
+
+    // 给予5积分奖励(额外奖励不计XP)
+    awardBonusPoints(5, 'daily_all_done');
+    data[todayKey] = true;  // 标记今天已领取
+    saveData();
+    showToast('🎉 今日任务全部完成！额外奖励 +5 积分');
+    return true;
+  }
+
+  return false;
 }
 
 /* ===== 任务完成 ===== */
@@ -629,7 +556,7 @@ function completeTask(taskId, progress) {
   if (newProgress > oldProgress) {
     var progressDiff = newProgress - oldProgress;
     var basePoints = task.points * progressDiff / 100;
-    var actualPoints = awardPoints(basePoints, taskId);
+    var actualPoints = awardTaskPoints(basePoints, taskId);
 
     records[taskId] = {
       progress: newProgress,
@@ -696,18 +623,14 @@ function doLottery() {
   data.lotteryChances--;
   // 随机 10~100 积分
   var points = Math.floor(Math.random() * 91) + 10;
-  data.availablePoints += points;
-  data.totalXP += points;
-  var today = getTodayStr();
-  data.pointsHistory[today] = (data.pointsHistory[today] || 0) + points;
-  saveData();
+  // 抽奖积分不计入经验值
+  awardBonusPoints(points, 'lottery');
 
   // 首次抽奖徽章
   if (!data.badges.find(function(b) { return b.id === 'first_lottery'; })) {
     unlockBadge('first_lottery', '初次抽奖', '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">');
   }
 
-  checkLevelUp();
   checkAutoBadges();
   return points;
 }
@@ -739,7 +662,7 @@ function exchangeReward(rewardId) {
 }
 
 /* ===== UI 渲染 ===== */
-var currentPeriod = 'daily';
+var currentPeriod = 'today';
 var editingTaskId = null;
 var editingRewardId = null;
 var selectedTag = '学习';
@@ -803,21 +726,30 @@ function renderDailyChallenge() {
 
 function renderTaskList() {
   var period = currentPeriod;
-  var tasks = data.tasks.filter(function(t) { return t.period === period; });
+  var tasks, records, recordKey;
 
-  var titleMap = { daily: '今日任务', weekly: '本周任务', monthly: '本月任务' };
-  var iconMap = { daily: 'checklist.png', weekly: 'notebook.png', monthly: 'book-open.png' };
+  // 标题映射
+  var titleMap = { today: '今天任务', weekly: '本周任务', monthly: '本月任务' };
+  var iconMap = { today: 'checklist.png', weekly: 'notebook.png', monthly: 'book-open.png' };
+  
   document.getElementById('task-list-icon').src = './assets/icons/' + iconMap[period];
   document.getElementById('task-list-title').textContent = titleMap[period];
 
-  // 获取完成记录
-  var records;
-  if (period === 'daily') {
+  if (period === 'today') {
+    // "今天" 页面：展示 today's 任务 + daily 任务
+    var todayTasks = data.tasks.filter(function(t) { return t.period === 'today'; });
+    var dailyTasks = data.tasks.filter(function(t) { return t.period === 'daily'; });
+    tasks = todayTasks.concat(dailyTasks);
+    
     records = data.taskRecords[getTodayStr()] || {};
   } else if (period === 'weekly') {
-    records = data.weeklyRecords[getWeekKey()] || {};
+    tasks = data.tasks.filter(function(t) { return t.period === 'weekly'; });
+    recordKey = getWeekKey();
+    records = data.weeklyRecords[recordKey] || {};
   } else {
-    records = data.monthlyRecords[getMonthKey()] || {};
+    tasks = data.tasks.filter(function(t) { return t.period === 'monthly'; });
+    recordKey = getMonthKey();
+    records = data.monthlyRecords[recordKey] || {};
   }
 
   // 完成率
@@ -863,12 +795,18 @@ function renderTaskList() {
       progressBar = '<div class="task-progress-bar" style="width: ' + progress + '%"></div>';
     }
 
+    // 如果是每日任务，在标签旁加"每日"标记
+    var tagHtml = '<span class="task-tag">' + escapeHtml(task.tag) + '</span>';
+    if (task.period === 'daily') {
+      tagHtml = '<span class="task-tag daily-badge">每日</span>' + tagHtml;
+    }
+
     return '<div class="' + cls + '" data-task-id="' + task.id + '">' +
       '<div class="task-check">' + checkSvg + '</div>' +
       '<div class="task-content">' +
         '<div class="task-name">' + escapeHtml(task.name) + '</div>' +
         '<div class="task-meta">' +
-          '<span class="task-tag">' + escapeHtml(task.tag) + '</span>' +
+          tagHtml +
           '<span class="task-points ' + (progress > 0 ? 'earned' : '') + '">' + pointsText + '</span>' +
         '</div>' +
       '</div>' +
@@ -1559,6 +1497,11 @@ function bindEvents() {
     document.getElementById('badge-unlock-overlay').classList.remove('show');
   });
 
+  // 兑换断签护盾按钮
+  document.getElementById('buy-shield-btn').addEventListener('click', function() {
+    buyShield();
+  });
+
   // 长按任务显示操作按钮
   var pressTimer = null;
   document.getElementById('task-list').addEventListener('touchstart', function(e) {
@@ -1656,6 +1599,9 @@ function hideModal(id) {
 
 /* ===== 初始化 ===== */
 function init() {
+  // 顺延昨天未完成的每日任务
+  carryOverUnfinishedTasks();
+
   // 检查断签
   checkStreak();
 

@@ -52,7 +52,7 @@
 
       <!-- 任务切换 Tab -->
       <div class="tab-switch">
-        <button class="active" data-period="daily">今日</button>
+        <button class="active" data-period="today">今天</button>
         <button data-period="weekly">本周</button>
         <button data-period="monthly">本月</button>
       </div>
@@ -62,7 +62,7 @@
         <div class="task-list-header">
           <div class="task-list-title">
             <img src="./assets/icons/checklist.png" class="title-icon" alt="tasks" id="task-list-icon">
-            <span id="task-list-title">今日任务</span>
+            <span id="task-list-title">今天任务</span>
           </div>
           <div class="completion-rate" id="completion-rate">
             <span class="rate-num">0</span> / 0 完成
@@ -114,6 +114,12 @@
         <div class="task-list-title"><img src="./assets/icons/whale-simple.png" class="title-icon" alt="inventory"> 我的道具</div>
       </div>
       <div class="inventory-grid" id="inventory-grid"></div>
+      <div class="shield-exchange" style="text-align: center; margin-top: 8px;">
+        <button class="btn btn-secondary" id="buy-shield-btn" style="font-size: 13px; padding: 8px 16px;">
+          <img src="./assets/icons/shield.png" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;" alt="shield">
+          30积分兑换断签护盾
+        </button>
+      </div>
 
       <!-- 兑换记录 -->
       <div class="task-list-header mt-4">
@@ -129,8 +135,8 @@
         <div class="stat-title"><img src="./assets/icons/checklist.png" class="title-icon" alt="rate"> 完成率</div>
         <div class="stat-grid">
           <div class="stat-item">
-            <div class="stat-value" id="stat-daily-rate">0%</div>
-            <div class="stat-label">今日</div>
+            <div class="stat-value" id="stat-today-rate">0%</div>
+            <div class="stat-label">今天</div>
           </div>
           <div class="stat-item">
             <div class="stat-value" id="stat-weekly-rate">0%</div>
@@ -200,8 +206,9 @@
         <label class="form-label">周期</label>
         <select class="form-select" id="task-period-select">
           <option value="daily">每日</option>
-          <option value="weekly">每周</option>
-          <option value="monthly">每月</option>
+          <option value="today">今天</option>
+          <option value="weekly">本周</option>
+          <option value="monthly">本月</option>
         </select>
       </div>
       <div class="form-group">
@@ -299,6 +306,26 @@
       <div class="confirm-actions">
         <button class="confirm-no" id="confirm-no-btn">取消</button>
         <button class="confirm-yes" id="confirm-yes-btn">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 断签护盾兑换弹窗 -->
+  <div class="shield-exchange-overlay" id="shield-exchange-overlay">
+    <div class="shield-exchange-card">
+      <div class="shield-exchange-icon">
+        <img src="./assets/icons/shield.png" alt="shield" style="width: 48px; height: 48px;">
+      </div>
+      <div class="shield-exchange-title">断签保护</div>
+      <div class="shield-exchange-desc">连续打卡即将中断！</div>
+      <div class="shield-exchange-desc">使用断签护盾可保护本次连续记录</div>
+      <div class="shield-exchange-cost">
+        <img src="./assets/icons/shell.png" style="width: 20px; height: 20px; vertical-align: middle;" alt="points">
+        <span style="color: var(--gold); font-weight: 700;">30 积分</span>
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 16px;">
+        <button class="btn btn-ghost" style="flex: 1;" id="shield-exchange-cancel-btn">放弃</button>
+        <button class="btn btn-primary" style="flex: 1;" id="shield-exchange-confirm-btn">兑换并使用</button>
       </div>
     </div>
   </div>
