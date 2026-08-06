@@ -237,6 +237,85 @@ function getActiveMultipliers() {
   return multipliers;
 }
 
+/* ===== 每日挑战类型 ===== */
+var CHALLENGE_TYPES = [
+  { type: 'complete_3', desc: '今天完成3个任务', reward: 10 },
+  { type: 'complete_5', desc: '今天完成5个任务', reward: 15 },
+  { type: 'fitness', desc: '完成一个健身类任务', reward: 8 },
+  { type: 'study', desc: '完成一个学习类任务', reward: 8 },
+  { type: 'work', desc: '完成一个工作类任务', reward: 8 },
+  { type: 'clear_all', desc: '清空今日所有任务', reward: 15 },
+  { type: 'monthly', desc: '完成一个每月任务', reward: 12 },
+  { type: 'points_20', desc: '今天获得20积分', reward: 10 },
+  { type: 'points_30', desc: '今天获得30积分', reward: 12 }
+];
+
+function generateDailyChallenge() {
+  var today = getTodayStr();
+  if (data.dailyChallenge && data.dailyChallenge.date === today) return;
+
+  var idx = Math.floor(Math.random() * CHALLENGE_TYPES.length);
+  var challenge = CHALLENGE_TYPES[idx];
+  data.dailyChallenge = {
+    date: today,
+    type: challenge.type,
+    desc: challenge.desc,
+    reward: challenge.reward,
+    done: false
+  };
+  saveData();
+}
+
+function checkDailyChallenge() {
+  // 检查今日挑战是否完成
+  if (!data.dailyChallenge || data.dailyChallenge.done) return;
+
+  var today = getTodayStr();
+  var todayRecs = data.taskRecords[today] || {};
+  var tasks = data.tasks.filter(function(t) { return t.period === 'daily' || t.period === 'today'; });
+  var completedCount = tasks.filter(function(t) {
+    return todayRecs[t.id] && todayRecs[t.id].progress >= 100;
+  }).length;
+
+  var challenge = data.dailyChallenge;
+  var met = false;
+
+  switch (challenge.type) {
+    case 'complete_3':
+      met = completedCount >= 3;
+      break;
+    case 'complete_5':
+      met = completedCount >= 5;
+      break;
+    case 'fitness':
+      met = tasks.some(function(t) { return t.tag === '健身' && todayRecs[t.id] && todayRecs[t.id].progress >= 100; });
+      break;
+    case 'study':
+      met = tasks.some(function(t) { return t.tag === '学习' && todayRecs[t.id] && todayRecs[t.id].progress >= 100; });
+      break;
+    case 'work':
+      met = tasks.some(function(t) { return t.tag === '工作' && todayRecs[t.id] && todayRecs[t.id].progress >= 100; });
+      break;
+    case 'clear_all':
+      met = tasks.length > 0 && completedCount === tasks.length;
+      break;
+    case 'monthly':
+      var monthRecs = data.monthlyRecords[getMonthKey()] || {};
+      met = data.tasks.some(function(t) { return t.period === 'monthly' && monthRecs[t.id] && monthRecs[t.id].progress >= 100; });
+      break;
+    case 'points_20':
+      met = (data.pointsHistory[today] || 0) >= 20;
+      break;
+    case 'points_30':
+      met = (data.pointsHistory[today] || 0) >= 30;
+      break;
+  }
+
+  if (met) {
+    completeDailyChallenge();
+  }
+}
+
 /* ===== 等级系统 ===== */
 function getLevelInfo(level) {
   // 计算达到某等级所需的累计XP
