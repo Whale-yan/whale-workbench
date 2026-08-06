@@ -316,6 +316,23 @@ function checkDailyChallenge() {
   }
 }
 
+function completeDailyChallenge() {
+  if (!data.dailyChallenge || data.dailyChallenge.done) return;
+  data.dailyChallenge.done = true;
+  var reward = data.dailyChallenge.reward;
+  var multiplier = getTotalMultiplier();
+  var actualReward = Math.round(reward * multiplier);
+  data.availablePoints += actualReward;
+  data.totalXP += actualReward;
+  // 记录今日积分
+  var today = getTodayStr();
+  data.pointsHistory[today] = (data.pointsHistory[today] || 0) + actualReward;
+  saveData();
+  showToast('🎯 挑战完成！+' + actualReward + '积分');
+  checkLevelUp();
+  checkAutoBadges();
+}
+
 /* ===== 等级系统 ===== */
 function getLevelInfo(level) {
   // 计算达到某等级所需的累计XP
@@ -378,6 +395,120 @@ function checkStreak() {
         // 没有护盾，弹出兑换弹窗
         showShieldExchangeModal();
       }
+    }
+  }
+}
+
+/* ===== 打卡 ===== */
+function onCheckIn() {
+  var today = getTodayStr();
+  if (data.lastCheckIn !== today) {
+    data.streak++;
+    data.lastCheckIn = today;
+    // 检查7天循环奖励
+    if (data.streak % 7 === 0) {
+      // 额外+10积分
+      data.availablePoints += 10;
+      data.totalXP += 10;
+      saveData();
+      showToast('🔥 连续打卡' + data.streak + '天！额外+10积分');
+    }
+    // 检查里程碑奖励
+    checkStreakMilestones();
+    saveData();
+  }
+}
+
+function checkStreakMilestones() {
+  // 每30天: +50积分 + 双倍卡 + 徽章
+  if (data.streak > 0 && data.streak % 30 === 0) {
+    data.availablePoints += 50;
+    data.totalXP += 50;
+    data.doubleCards++;
+    unlockBadge('streak_' + data.streak, '连续打卡' + data.streak + '天', '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">');
+    showToast('🏆 连续打卡' + data.streak + '天！+50积分 + 双倍卡 + 徽章');
+  }
+  // 每100天: +100积分
+  if (data.streak > 0 && data.streak % 100 === 0) {
+    data.availablePoints += 100;
+    data.totalXP += 100;
+    showToast('🎉 连续打卡' + data.streak + '天！额外+100积分');
+  }
+  // 每365天: +365积分 + 徽章
+  if (data.streak > 0 && data.streak % 365 === 0) {
+    data.availablePoints += 365;
+    data.totalXP += 365;
+    unlockBadge('streak_' + data.streak, '连续打卡' + data.streak + '天', '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">');
+    showToast('🎉🎉 连续打卡' + data.streak + '天！+365积分 + 专属徽章');
+  }
+}
+
+function unlockBadge(id, name, icon) {
+  var existing = data.badges.find(function(b) { return b.id === id; });
+  if (existing) {
+    existing.count++;
+    existing.unlockedAt = getTodayStr();
+  } else {
+    var def = BADGE_DEFS.find(function(b) { return b.id === id; });
+    data.badges.push({
+      id: id,
+      name: name || (def ? def.name : id),
+      icon: icon || (def ? def.icon : '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">'),
+      unlockedAt: getTodayStr(),
+      count: 1
+    });
+  }
+  saveData();
+  var b = data.badges.find(function(b) { return b.id === id; });
+  showBadgeUnlock(b.icon, b.name);
+}
+
+function checkAutoBadges() {
+  // 首次完成任务
+  if (data.totalXP > 0 && !data.badges.find(function(b) { return b.id === 'first_task'; })) {
+    unlockBadge('first_task', '初次完成', '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">');
+  }
+  // 连续打卡里程碑
+  var streakBadges = [
+    { days: 7, id: 'streak_7', name: '一周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
+    { days: 14, id: 'streak_14', name: '两周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
+    { days: 21, id: 'streak_21', name: '三周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">' },
+    { days: 30, id: 'streak_30', name: '月度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
+    { days: 60, id: 'streak_60', name: '双月坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
+    { days: 90, id: 'streak_90', name: '季度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' },
+    { days: 100, id: 'streak_100', name: '百日坚持', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
+    { days: 180, id: 'streak_180', name: '半载坚持', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">' },
+    { days: 365, id: 'streak_365', name: '年度坚持', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">' }
+  ];
+  for (var i = 0; i < streakBadges.length; i++) {
+    var sb = streakBadges[i];
+    if (data.streak >= sb.days && !data.badges.find(function(b) { return b.id === sb.id; })) {
+      unlockBadge(sb.id, sb.name, sb.icon);
+    }
+  }
+  // 积分里程碑
+  var pointBadges = [
+    { pts: 500, id: 'points_500', name: '积分小成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">' },
+    { pts: 1000, id: 'points_1000', name: '积分中成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">' },
+    { pts: 5000, id: 'points_5000', name: '积分大成', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">' }
+  ];
+  for (var j = 0; j < pointBadges.length; j++) {
+    var pb = pointBadges[j];
+    if (data.totalXP >= pb.pts && !data.badges.find(function(b) { return b.id === pb.id; })) {
+      unlockBadge(pb.id, pb.name, pb.icon);
+    }
+  }
+  // 等级徽章
+  var levelBadges = [
+    { lv: 10, id: 'level_10', name: '十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
+    { lv: 20, id: 'level_20', name: '二十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">' },
+    { lv: 30, id: 'level_30', name: '三十级达成', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">' }
+  ];
+  for (var k = 0; k < levelBadges.length; k++) {
+    var lb = levelBadges[k];
+    var levelInfo = getLevelFromXP(data.totalXP);
+    if (levelInfo.level >= lb.lv && !data.badges.find(function(b) { return b.id === lb.id; })) {
+      unlockBadge(lb.id, lb.name, lb.icon);
     }
   }
 }
