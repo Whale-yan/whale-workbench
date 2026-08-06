@@ -537,7 +537,7 @@ function completeTask(taskId, progress) {
   var today = getTodayStr();
   var recordKey, records;
 
-  if (task.period === 'daily') {
+  if (task.period === 'daily' || task.period === 'today') {
     recordKey = today;
     records = data.taskRecords[today] || {};
   } else if (task.period === 'weekly') {
