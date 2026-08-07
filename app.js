@@ -666,7 +666,7 @@ function carryOverUnfinishedTasks() {
   yesterday.setDate(yesterday.getDate() - 1);
   var yestStr = formatDate(yesterday);
 
-  // 检查昨天的每日任务记录
+  // 只处理昨天的每日任务（daily），今天任务（today）不保留
   var yestRecs = data.taskRecords[yestStr] || {};
   var dailyTasks = data.tasks.filter(function(t) { return t.period === 'daily'; });
 
@@ -701,41 +701,32 @@ function carryOverUnfinishedTasks() {
 function checkAllDailyTasksCompleted() {
   var today = getTodayStr();
   var todayRecs = data.taskRecords[today] || {};
-  var dailyTasks = data.tasks.filter(function(t) { return t.period === 'daily'; });
+  var allTasks = data.tasks.filter(function(t) { return t.period === 'daily' || t.period === 'today'; });
 
   // 如果没有任务，不触发
-  if (dailyTasks.length === 0) return false;
+  if (allTasks.length === 0) return false;
 
-  // 检查是否全部完成(进度>=100)
-  var allCompleted = dailyTasks.every(function(t) {
+  // 检查所有 today + daily 任务是否都已完成
+  var allDone = allTasks.every(function(t) {
     return todayRecs[t.id] && todayRecs[t.id].progress >= 100;
   });
 
-  if (!allCompleted) return false;
+  if (!allDone) return false;
 
-  // 计算今日通过完成任务获得的总经验值
-  var totalXPToday = 0;
-  dailyTasks.forEach(function(t) {
-    var rec = todayRecs[t.id];
-    if (rec && rec.progress >= 100) {
-      totalXPToday += rec.points || 0;
-    }
-  });
-
-  // 总经验需大于等于15才触发额外奖励
-  if (totalXPToday >= 15) {
-    // 检查今天是否已领取过全清奖励
+  // 检查今日经验值是否 >= 15
+  var todayPoints = data.pointsHistory[today] || 0;
+  if (todayPoints >= 15) {
     var todayKey = 'daily_all_done_' + today;
-    if (data[todayKey]) return false;  // 今天已领取过
+    if (data.taskRecords[todayKey]) return false; // 已经领过了
 
-    // 给予5积分奖励(额外奖励不计XP)
-    awardBonusPoints(5, 'daily_all_done');
-    data[todayKey] = true;  // 标记今天已领取
+    // 标记已领
+    data.taskRecords[todayKey] = { progress: 100, points: 0, time: Date.now() };
+    // 额外+5积分（仅加可用积分，不加XP）
+    awardBonusPoints(5);
+    showToast('🌟 今日任务全部完成！额外+5积分奖励');
     saveData();
-    showToast('🎉 今日任务全部完成！额外奖励 +5 积分');
     return true;
   }
-
   return false;
 }
 
@@ -774,10 +765,10 @@ function completeTask(taskId, progress) {
       time: Date.now()
     };
 
-    if (task.period === 'daily') {
+    if (task.period === 'daily' || task.period === 'today') {
       data.taskRecords[today] = records;
-      // 打卡
-      onCheckIn();
+      // 打卡（仅 daily 任务触发）
+      if (task.period === 'daily') onCheckIn();
     } else if (task.period === 'weekly') {
       data.weeklyRecords[recordKey] = records;
     } else {
@@ -1220,16 +1211,26 @@ function renderCategoryChart() {
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
 
-  // 统计各分类的已完成积分数
+  // 统计各分类的已完成积分数（累计所有任务）
   var catPoints = {};
-  var today = getTodayStr();
-  var todayRecs = data.taskRecords[today] || {};
 
+  // 遍历所有周期记录，累计各分类已完成积分数
   data.tasks.forEach(function(t) {
-    var rec = todayRecs[t.id];
-    if (rec && rec.points > 0) {
-      catPoints[t.tag] = (catPoints[t.tag] || 0) + rec.points;
+    var rec, periodRecs;
+    if (t.period === 'daily' || t.period === 'today') {
+      periodRecs = data.taskRecords;
+    } else if (t.period === 'weekly') {
+      periodRecs = data.weeklyRecords;
+    } else {
+      periodRecs = data.monthlyRecords;
     }
+    // 遍历所有日期记录
+    Object.keys(periodRecs).forEach(function(key) {
+      rec = periodRecs[key][t.id];
+      if (rec && rec.points > 0) {
+        catPoints[t.tag] = (catPoints[t.tag] || 0) + rec.points;
+      }
+    });
   });
 
   var cats = Object.keys(catPoints);
