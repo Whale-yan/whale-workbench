@@ -39,6 +39,8 @@ function getDefaultData() {
     pointsHistory: {},   // {date: earnedPoints}
     // 上次访问时间（用于判断断签）
     lastVisit: null,
+    // 断签提醒已弹出标记（避免重复弹出）
+    breakShieldAlerted: null,
     // 生日设置
     birthdayLunar: { month: 3, day: 28 } // 农历三月廿八
   };
@@ -392,8 +394,12 @@ function checkStreak() {
         showToast('🛡️ 已自动使用护盾，保护连续记录！');
         saveData();
       } else {
-        // 没有护盾，弹出兑换弹窗
-        showShieldExchangeModal();
+        // 没有护盾，弹出兑换弹窗（但每天只弹一次）
+        if (data.breakShieldAlerted !== today) {
+          data.breakShieldAlerted = today;
+          saveData();
+          showShieldExchangeModal();
+        }
       }
     }
   }
@@ -783,7 +789,7 @@ function completeTask(taskId, progress) {
       points: existing ? existing.points : 0,
       time: Date.now()
     };
-    if (task.period === 'daily') data.taskRecords[today] = records;
+    if (task.period === 'daily' || task.period === 'today') data.taskRecords[today] = records;
     else if (task.period === 'weekly') data.weeklyRecords[recordKey] = records;
     else data.monthlyRecords[recordKey] = records;
     saveData();
