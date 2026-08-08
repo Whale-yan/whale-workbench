@@ -767,8 +767,8 @@ function completeTask(taskId, progress) {
 
     if (task.period === 'daily' || task.period === 'today') {
       data.taskRecords[today] = records;
-      // 打卡（仅 daily 任务触发）
-      if (task.period === 'daily') onCheckIn();
+      // 打卡（daily 和 today 任务都触发连续打卡记录）
+      onCheckIn();
     } else if (task.period === 'weekly') {
       data.weeklyRecords[recordKey] = records;
     } else {
@@ -1090,8 +1090,8 @@ function renderRewardsPage() {
 }
 
 function renderStatsPage() {
-  // 完成率
-  var dailyTasks = data.tasks.filter(function(t) { return t.period === 'daily'; });
+  // 完成率（daily + today 合并统计）
+  var dailyTasks = data.tasks.filter(function(t) { return t.period === 'daily' || t.period === 'today'; });
   var weeklyTasks = data.tasks.filter(function(t) { return t.period === 'weekly'; });
   var monthlyTasks = data.tasks.filter(function(t) { return t.period === 'monthly'; });
 
