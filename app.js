@@ -665,6 +665,53 @@ function checkLevelUp() {
   }
 }
 
+/* ===== 清理已完成的非每日任务 ===== */
+function cleanupCompletedNonDailyTasks() {
+  var today = getTodayStr();
+  var currentWeek = getWeekKey();
+  var currentMonth = getMonthKey();
+  var toDelete = [];
+
+  data.tasks.forEach(function(task) {
+    if (task.period === 'daily') return; // 每日任务不清理
+
+    var foundCompleted = false;
+
+    if (task.period === 'today') {
+      // 检查所有过去日期的记录
+      Object.keys(data.taskRecords).forEach(function(dateKey) {
+        if (dateKey < today) {
+          var rec = data.taskRecords[dateKey][task.id];
+          if (rec && rec.progress >= 100) foundCompleted = true;
+        }
+      });
+    } else if (task.period === 'weekly') {
+      // 检查所有过去周的记录
+      Object.keys(data.weeklyRecords).forEach(function(weekKey) {
+        if (weekKey < currentWeek) {
+          var rec = data.weeklyRecords[weekKey][task.id];
+          if (rec && rec.progress >= 100) foundCompleted = true;
+        }
+      });
+    } else if (task.period === 'monthly') {
+      // 检查所有过去月的记录
+      Object.keys(data.monthlyRecords).forEach(function(monthKey) {
+        if (monthKey < currentMonth) {
+          var rec = data.monthlyRecords[monthKey][task.id];
+          if (rec && rec.progress >= 100) foundCompleted = true;
+        }
+      });
+    }
+
+    if (foundCompleted) toDelete.push(task.id);
+  });
+
+  if (toDelete.length > 0) {
+    data.tasks = data.tasks.filter(function(t) { return toDelete.indexOf(t.id) === -1; });
+    saveData();
+  }
+}
+
 /* ===== 本日未完成任务顺延 ===== */
 function carryOverUnfinishedTasks() {
   // 获取前一天的日期
@@ -1816,6 +1863,9 @@ function hideModal(id) {
 
 /* ===== 初始化 ===== */
 function init() {
+  // 清理已完成的非每日任务（today/weekly/monthly完成后跨周期自动删除）
+  cleanupCompletedNonDailyTasks();
+
   // 顺延昨天未完成的每日任务
   carryOverUnfinishedTasks();
 
