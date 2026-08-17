@@ -1158,7 +1158,7 @@ function renderStatsPage() {
     return Math.round((done / tasks.length) * 100);
   }
 
-  document.getElementById('stat-daily-rate').textContent = calcRate(dailyTasks, todayRecs) + '%';
+  document.getElementById('stat-today-rate').textContent = calcRate(dailyTasks, todayRecs) + '%';
   document.getElementById('stat-weekly-rate').textContent = calcRate(weeklyTasks, weekRecs) + '%';
   document.getElementById('stat-monthly-rate').textContent = calcRate(monthlyTasks, monthRecs) + '%';
 
