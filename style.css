@@ -1683,9 +1683,40 @@ ul, ol { list-style: none; }
   margin-top: var(--sp-1);
 }
 
-.exchange-record .ex-cost {
-  color: var(--orange);
-  font-weight: 700;
+.exchange-record .rec-info {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.exchange-record .rec-icon {
+  flex-shrink: 0;
+}
+
+.exchange-record .rec-detail {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.exchange-record .rec-name {
+  font-weight: 600;
+  color: #40916c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.exchange-record .rec-time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.exchange-record .use-reward-btn {
+  flex-shrink: 0;
+  margin-left: var(--sp-2);
 }
 
 /* === 响应式 === */

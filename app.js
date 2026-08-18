@@ -899,6 +899,7 @@ function exchangeReward(rewardId) {
   }
   data.availablePoints -= reward.cost;
   data.exchangeRecords.unshift({
+    id: 'rec_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
     name: reward.name,
     cost: reward.cost,
     icon: reward.icon,
@@ -912,7 +913,12 @@ function exchangeReward(rewardId) {
   if (!data.badges.find(function(b) { return b.id === 'first_reward'; })) {
     unlockBadge('first_reward', '首次兑换', '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">');
   }
-  showToast('🎉 兑换成功：' + reward.name);
+
+  // 立即刷新奖励页面，无需手动刷新
+  renderLevelBar();
+  renderRewardsPage();
+
+  showToast('🎉 兑换成功：' + reward.name + '，已加入我的奖励');
 }
 
 /* ===== UI 渲染 ===== */
@@ -1128,15 +1134,22 @@ function renderRewardsPage() {
 
   invEl.innerHTML = invHtml;
 
-  // 兑换记录
+  // 我的奖励
   var exEl = document.getElementById('exchange-list');
   if (data.exchangeRecords.length === 0) {
-    exEl.innerHTML = '<div class="empty-state"><img src="./assets/icons/notebook.png" class="empty-icon" alt="empty"><div class="empty-text">暂无兑换记录</div></div>';
+    exEl.innerHTML = '<div class="empty-state"><img src="./assets/icons/notebook.png" class="empty-icon" alt="empty"><div class="empty-text">还没有兑换奖励，去奖励清单兑换吧</div></div>';
   } else {
     exEl.innerHTML = data.exchangeRecords.map(function(r) {
-      return '<div class="exchange-record">' +
-        '<span>' + r.icon + ' ' + escapeHtml(r.name) + ' <span style="color:var(--text-tertiary);font-size:11px;">' + r.time + '</span></span>' +
-        '<span class="ex-cost">-' + r.cost + '</span>' +
+      var recId = r.id || ('rec_' + r.time);
+      return '<div class="exchange-record" data-record-id="' + recId + '">' +
+        '<div class="rec-info">' +
+          '<span class="rec-icon">' + r.icon + '</span>' +
+          '<div class="rec-detail">' +
+            '<span class="rec-name">' + escapeHtml(r.name) + '</span>' +
+            '<span class="rec-time">' + r.time + ' · -' + r.cost + '积分</span>' +
+          '</div>' +
+        '</div>' +
+        '<button class="btn btn-sm btn-primary use-reward-btn" data-record-id="' + recId + '">使用</button>' +
       '</div>';
     }).join('');
   }
@@ -1718,6 +1731,20 @@ function bindEvents() {
         render();
       });
     }
+  });
+
+  // 我的奖励 - 使用按钮（事件委托）
+  document.getElementById('exchange-list').addEventListener('click', function(e) {
+    var useBtn = e.target.closest('.use-reward-btn');
+    if (!useBtn) return;
+    var recId = useBtn.dataset.recordId;
+    var record = data.exchangeRecords.find(function(r) { return (r.id || 'rec_' + r.time) === recId; });
+    if (!record) return;
+    // 从列表中移除
+    data.exchangeRecords = data.exchangeRecords.filter(function(r) { return (r.id || 'rec_' + r.time) !== recId; });
+    saveData();
+    renderRewardsPage();
+    showToast('✅ 已使用：' + record.name);
   });
 
   // 抽奖
