@@ -55,7 +55,16 @@ function loadData() {
     var parsed = JSON.parse(raw);
     // 合并默认值，防止字段缺失
     var defaults = getDefaultData();
-    return Object.assign(defaults, parsed);
+    var merged = Object.assign(defaults, parsed);
+    // 给旧的兑换记录补上唯一ID（避免fallback到time导致误删）
+    if (merged.exchangeRecords && merged.exchangeRecords.length > 0) {
+      merged.exchangeRecords.forEach(function(r, i) {
+        if (!r.id) {
+          r.id = 'rec_legacy_' + i + '_' + Math.random().toString(36).slice(2, 8);
+        }
+      });
+    }
+    return merged;
   } catch(e) {
     return getDefaultData();
   }
@@ -1140,8 +1149,7 @@ function renderRewardsPage() {
     exEl.innerHTML = '<div class="empty-state"><img src="./assets/icons/notebook.png" class="empty-icon" alt="empty"><div class="empty-text">还没有兑换奖励，去奖励清单兑换吧</div></div>';
   } else {
     exEl.innerHTML = data.exchangeRecords.map(function(r) {
-      var recId = r.id || ('rec_' + r.time);
-      return '<div class="exchange-record" data-record-id="' + recId + '">' +
+      return '<div class="exchange-record" data-record-id="' + r.id + '">' +
         '<div class="rec-info">' +
           '<span class="rec-icon">' + r.icon + '</span>' +
           '<div class="rec-detail">' +
@@ -1149,7 +1157,7 @@ function renderRewardsPage() {
             '<span class="rec-time">' + r.time + ' · -' + r.cost + '积分</span>' +
           '</div>' +
         '</div>' +
-        '<button class="btn btn-sm btn-primary use-reward-btn" data-record-id="' + recId + '">使用</button>' +
+        '<button class="btn btn-sm btn-primary use-reward-btn" data-record-id="' + r.id + '">使用</button>' +
       '</div>';
     }).join('');
   }
@@ -1738,10 +1746,10 @@ function bindEvents() {
     var useBtn = e.target.closest('.use-reward-btn');
     if (!useBtn) return;
     var recId = useBtn.dataset.recordId;
-    var record = data.exchangeRecords.find(function(r) { return (r.id || 'rec_' + r.time) === recId; });
+    var record = data.exchangeRecords.find(function(r) { return r.id === recId; });
     if (!record) return;
-    // 从列表中移除
-    data.exchangeRecords = data.exchangeRecords.filter(function(r) { return (r.id || 'rec_' + r.time) !== recId; });
+    // 只移除这一条记录
+    data.exchangeRecords = data.exchangeRecords.filter(function(r) { return r.id !== recId; });
     saveData();
     renderRewardsPage();
     showToast('✅ 已使用：' + record.name);
