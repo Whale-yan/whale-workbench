@@ -1224,6 +1224,8 @@ function renderStatsPage() {
 function renderPointsChart() {
   var canvas = document.getElementById('chart-points');
   if (!canvas) return;
+  var w = canvas.offsetWidth;
+  if (!w) return; // 页面不可见时跳过，避免把style.width设成0px
   var ctx = canvas.getContext('2d');
 
   // 获取近7天数据
@@ -1238,7 +1240,6 @@ function renderPointsChart() {
   var maxVal = Math.max.apply(null, values.concat([10]));
 
   // 画图
-  var w = canvas.offsetWidth;
   var h = 160;
   canvas.width = w * 2;
   canvas.height = h * 2;
@@ -1311,6 +1312,8 @@ function renderPointsChart() {
 function renderCategoryChart() {
   var canvas = document.getElementById('chart-categories');
   if (!canvas) return;
+  var w = canvas.offsetWidth;
+  if (!w) return; // 页面不可见时跳过
   var ctx = canvas.getContext('2d');
 
   // 统计各分类的已完成积分数（累计所有任务）
@@ -1339,7 +1342,6 @@ function renderCategoryChart() {
   var values = cats.map(function(c) { return catPoints[c]; });
   var total = values.reduce(function(a, b) { return a + b; }, 0);
 
-  var w = canvas.offsetWidth;
   var h = 160;
   canvas.width = w * 2;
   canvas.height = h * 2;
@@ -1907,10 +1909,12 @@ function switchPage(page) {
   document.querySelector('.nav-item[data-page="' + page + '"]').classList.add('active');
 
   if (page === 'stats') {
-    // 延迟渲染图表，等待页面可见
-    setTimeout(function() {
-      renderStatsPage();
-    }, 100);
+    // 延迟渲染图表，等待页面可见后 canvas 才有正确宽度
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        renderStatsPage();
+      });
+    });
   } else if (page === 'rewards') {
     renderRewardsPage();
   }

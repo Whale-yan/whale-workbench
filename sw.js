@@ -1,5 +1,5 @@
 // Service Worker - 鲸鱼工作台 PWA 离线缓存
-const CACHE_NAME = 'whale-workbench-v11';
+const CACHE_NAME = 'whale-workbench-v12';
 const ASSETS = [
   './',
   './index.html',
