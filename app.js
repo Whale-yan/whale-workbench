@@ -100,6 +100,12 @@ function formatDate(d) {
   return y + '-' + m + '-' + day;
 }
 
+function formatPoints(val) {
+  // 保留一位小数，如果是整数则不显示.0
+  var rounded = Math.round(val * 10) / 10;
+  return rounded % 1 === 0 ? String(rounded) : rounded.toFixed(1);
+}
+
 function getWeekKey(d) {
   // 周一为一周开始
   var date = d || getCurrentDay();
@@ -332,14 +338,14 @@ function completeDailyChallenge() {
   data.dailyChallenge.done = true;
   var reward = data.dailyChallenge.reward;
   var multiplier = getTotalMultiplier();
-  var actualReward = Math.round(reward * multiplier);
-  data.availablePoints += actualReward;
-  data.totalXP += actualReward;
+  var actualReward = Math.round(reward * multiplier * 10) / 10;
+  data.availablePoints = Math.round((data.availablePoints + actualReward) * 10) / 10;
+  data.totalXP = Math.round((data.totalXP + actualReward) * 10) / 10;
   // 记录今日积分
   var today = getTodayStr();
   data.pointsHistory[today] = (data.pointsHistory[today] || 0) + actualReward;
   saveData();
-  showToast('🎯 挑战完成！+' + actualReward + '积分');
+  showToast('🎯 挑战完成！+' + formatPoints(actualReward) + '积分');
   checkLevelUp();
   checkAutoBadges();
 }
@@ -633,16 +639,16 @@ function buyShield() {
 function awardTaskPoints(basePoints, taskId) {
   // 完成任务/挑战获得的积分，同时计入经验值
   var multiplier = getTotalMultiplier();
-  var actualPoints = Math.round(basePoints * multiplier);
-  data.availablePoints += actualPoints;
-  data.totalXP += actualPoints;
+  var actualPoints = Math.round(basePoints * multiplier * 10) / 10; // 保留一位小数
+  data.availablePoints = Math.round((data.availablePoints + actualPoints) * 10) / 10;
+  data.totalXP = Math.round((data.totalXP + actualPoints) * 10) / 10;
   // 记录今日积分
   var today = getTodayStr();
   data.pointsHistory[today] = (data.pointsHistory[today] || 0) + actualPoints;
   saveData();
 
   // 飘字动画
-  showFloatPoints('+' + actualPoints);
+  showFloatPoints('+' + formatPoints(actualPoints));
 
   // 积分数字跳动
   var pointsEl = document.getElementById('points-num');
@@ -973,14 +979,14 @@ function renderLevelBar() {
   var xpPercent = (levelInfo.currentXp / levelInfo.needXp) * 100;
 
   document.getElementById('level-num').textContent = 'Lv.' + data.level;
-  document.getElementById('points-num').textContent = data.availablePoints;
+  document.getElementById('points-num').textContent = formatPoints(data.availablePoints);
   document.getElementById('xp-bar-fill').style.width = xpPercent + '%';
-  document.getElementById('xp-text').textContent = levelInfo.currentXp + ' / ' + levelInfo.needXp + ' XP';
+  document.getElementById('xp-text').textContent = formatPoints(levelInfo.currentXp) + ' / ' + levelInfo.needXp + ' XP';
   document.getElementById('streak-text').textContent = '连续打卡 ' + data.streak + ' 天';
 
   // 奖励页也更新
   document.getElementById('rewards-level').textContent = 'Lv.' + data.level;
-  document.getElementById('rewards-points').textContent = data.availablePoints;
+  document.getElementById('rewards-points').textContent = formatPoints(data.availablePoints);
 }
 
 function renderSpecialBanner() {
@@ -1076,9 +1082,9 @@ function renderTaskList() {
 
     var pointsText = task.points + '分';
     if (isPartial) {
-      pointsText = '+' + Math.round(rec.points) + '/' + task.points + '分';
+      pointsText = '+' + formatPoints(rec.points) + '/' + task.points + '分';
     } else if (isCompleted) {
-      pointsText = '+' + Math.round(rec.points) + '分';
+      pointsText = '+' + formatPoints(rec.points) + '分';
     }
 
     var progressBar = '';
@@ -1848,10 +1854,10 @@ function bindEvents() {
 
 function updateProgressPreview(taskPoints, progress) {
   var multiplier = getTotalMultiplier();
-  var actualPoints = Math.round(taskPoints * progress / 100 * multiplier);
+  var actualPoints = Math.round(taskPoints * progress / 100 * multiplier * 10) / 10;
   var el = document.getElementById('progress-points-preview');
   if (progress > 0) {
-    el.textContent = '可得 ' + actualPoints + ' 分' + (multiplier > 1 ? ' (含倍率×' + multiplier.toFixed(1) + ')' : '');
+    el.textContent = '可得 ' + formatPoints(actualPoints) + ' 分' + (multiplier > 1 ? ' (含倍率×' + multiplier.toFixed(1) + ')' : '');
   } else {
     el.textContent = '可得 0 分';
   }
