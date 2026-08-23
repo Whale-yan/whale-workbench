@@ -458,6 +458,28 @@ function checkStreakMilestones() {
   }
 }
 
+/* ===== 徽章定义 ===== */
+var BADGE_DEFS = [
+  { id: 'first_task', name: '初次完成', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">', desc: '完成第一个任务' },
+  { id: 'streak_7', name: '一周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡7天' },
+  { id: 'streak_14', name: '两周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡14天' },
+  { id: 'streak_21', name: '三周坚持', icon: '<img src="./assets/icons/bell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡21天' },
+  { id: 'streak_30', name: '月度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡30天' },
+  { id: 'streak_60', name: '双月坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡60天' },
+  { id: 'streak_90', name: '季度坚持', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡90天' },
+  { id: 'streak_100', name: '百日坚持', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡100天' },
+  { id: 'streak_180', name: '半载坚持', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '连续打卡180天' },
+  { id: 'streak_365', name: '年度坚持', icon: '<img src="./assets/icons/whale-star.png" class="badge-icon-img" alt="badge">', desc: '连续打卡365天' },
+  { id: 'first_reward', name: '首次兑换', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '兑换第一个奖励' },
+  { id: 'first_lottery', name: '初次抽奖', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '首次使用积分抽奖' },
+  { id: 'points_500', name: '积分小成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">', desc: '累计获得500积分' },
+  { id: 'points_1000', name: '积分中成', icon: '<img src="./assets/icons/badge-star-2.png" class="badge-icon-img" alt="badge">', desc: '累计获得1000积分' },
+  { id: 'points_5000', name: '积分大成', icon: '<img src="./assets/icons/shell.png" class="badge-icon-img" alt="badge">', desc: '累计获得5000积分' },
+  { id: 'level_10', name: '十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '达到10级' },
+  { id: 'level_20', name: '二十级达成', icon: '<img src="./assets/icons/star.png" class="badge-icon-img" alt="badge">', desc: '达到20级' },
+  { id: 'level_30', name: '三十级达成', icon: '<img src="./assets/icons/badge-star.png" class="badge-icon-img" alt="badge">', desc: '达到30级' }
+];
+
 function unlockBadge(id, name, icon) {
   var existing = data.badges.find(function(b) { return b.id === id; });
   if (existing) {
