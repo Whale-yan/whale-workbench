@@ -27,6 +27,7 @@ function getDefaultData() {
     exchangeRecords: [], // {name, cost, icon, time}
     // 抽奖
     lotteryChances: 0,   // 剩余抽奖次数
+    lotteryUsed: 0,      // 已使用抽奖次数（用于重算总应得次数）
     // 道具
     doubleCards: 0,      // 双倍积分卡数量
     shields: 0,          // 断签护盾数量
@@ -457,6 +458,46 @@ function checkLotteryCompensation() {
   }
 }
 
+/* ===== 一次性重算：修正因刷XP导致的多余等级和抽奖 ===== */
+function recalcLevelAndLottery() {
+  if (data.levelRecalculated) return; // 只重算一次
+
+  var correctLevel = getLevelFromXP(data.totalXP).level;
+  var oldLevel = data.level;
+
+  // 计算正确等级下应有的抽奖总次数
+  var correctTotalLottery = 0;
+  for (var lv = 2; lv <= correctLevel; lv++) {
+    correctTotalLottery += getLotteryChancesForLevel(lv);
+  }
+  // 30天补偿的1次
+  if (data.lotteryCompensated) correctTotalLottery += getLotteryChancesForLevel(4);
+
+  // 当前剩余 + 已用 = 当前记录的总额
+  var currentTotal = data.lotteryChances + (data.lotteryUsed || 0);
+  var diff = currentTotal - correctTotalLottery;
+
+  if (correctLevel < oldLevel || diff > 0) {
+    data.level = correctLevel;
+    if (diff > 0) {
+      data.lotteryChances -= diff;
+      if (data.lotteryChances < 0) data.lotteryChances = 0;
+    }
+    data.levelRecalculated = true;
+    saveData();
+    setTimeout(function() {
+      var msg = '等级修正：Lv.' + oldLevel + ' → Lv.' + correctLevel;
+      if (diff > 0) {
+        msg += '，回收多发的 ' + diff + ' 次抽奖机会';
+      }
+      showToast('🔧 ' + msg);
+    }, 3000);
+  } else {
+    data.levelRecalculated = true;
+    saveData();
+  }
+}
+
 function checkStreakMilestones() {
   // 每30天: +50积分 + 双倍卡 + 徽章
   if (data.streak > 0 && data.streak % 30 === 0) {
@@ -884,7 +925,19 @@ function completeTask(taskId, progress) {
 
     saveData();
   } else if (newProgress < oldProgress) {
-    // 进度减少（不扣分）
+    // 进度减少：按比例扣回已发放的积分和XP
+    var refundPoints = existing ? existing.points * (oldProgress - newProgress) / oldProgress : 0;
+    refundPoints = Math.round(refundPoints * 10) / 10;
+    if (existing && refundPoints > 0) {
+      existing.points = Math.round((existing.points - refundPoints) * 10) / 10;
+      data.availablePoints = Math.round((data.availablePoints - refundPoints) * 10) / 10;
+      data.totalXP = Math.round((data.totalXP - refundPoints) * 10) / 10;
+      // 记录今日积分也要减
+      var todayR = getTodayStr();
+      if (data.pointsHistory[todayR]) {
+        data.pointsHistory[todayR] = Math.round((data.pointsHistory[todayR] - refundPoints) * 10) / 10;
+      }
+    }
     records[taskId] = {
       progress: newProgress,
       points: existing ? existing.points : 0,
@@ -894,6 +947,12 @@ function completeTask(taskId, progress) {
     else if (task.period === 'weekly') data.weeklyRecords[recordKey] = records;
     else data.monthlyRecords[recordKey] = records;
     saveData();
+    // 进度减少后等级可能降回，重新检查（降级不发奖励，只修正等级）
+    var levelInfo = getLevelFromXP(data.totalXP);
+    if (levelInfo.level < data.level) {
+      data.level = levelInfo.level;
+      saveData();
+    }
   }
 
   // 检查特殊日期额外奖励
@@ -929,6 +988,7 @@ function doLottery() {
     return;
   }
   data.lotteryChances--;
+  data.lotteryUsed++;
   // 随机 10~100 积分
   var points = Math.floor(Math.random() * 91) + 10;
   // 抽奖积分不计入经验值
@@ -1958,6 +2018,9 @@ function init() {
 
   // 一次性补偿：打卡30天升级时漏发的抽奖机会
   checkLotteryCompensation();
+
+  // 一次性重算：修正因刷XP导致的多余等级和抽奖
+  recalcLevelAndLottery();
 
   // 生成每日挑战
   generateDailyChallenge();
