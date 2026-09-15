@@ -436,6 +436,8 @@ function onCheckIn() {
     }
     // 检查里程碑奖励
     checkStreakMilestones();
+    // 里程碑积分可能导致升级，需要重新检查
+    checkLevelUp();
     saveData();
   }
 }
