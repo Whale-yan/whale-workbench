@@ -442,6 +442,21 @@ function onCheckIn() {
   }
 }
 
+/* ===== 一次性补偿：30天升级漏发抽奖 ===== */
+function checkLotteryCompensation() {
+  if (data.lotteryCompensated) return; // 只补一次
+  // streak >= 30 且等级 >= 4 说明30天里程碑已触发但抽奖没发
+  if (data.streak >= 30 && data.level >= 4) {
+    var chances = getLotteryChancesForLevel(4); // 4级应得的抽奖次数
+    data.lotteryChances += chances;
+    data.lotteryCompensated = true;
+    saveData();
+    setTimeout(function() {
+      showLevelUp(4, '补偿发放：获得 ' + chances + ' 次抽奖机会');
+    }, 2000);
+  }
+}
+
 function checkStreakMilestones() {
   // 每30天: +50积分 + 双倍卡 + 徽章
   if (data.streak > 0 && data.streak % 30 === 0) {
@@ -1940,6 +1955,9 @@ function init() {
 
   // 检查断签
   checkStreak();
+
+  // 一次性补偿：打卡30天升级时漏发的抽奖机会
+  checkLotteryCompensation();
 
   // 生成每日挑战
   generateDailyChallenge();
