@@ -460,42 +460,16 @@ function checkLotteryCompensation() {
 
 /* ===== 一次性重算：修正因刷XP导致的多余等级和抽奖 ===== */
 function recalcLevelAndLottery() {
-  if (data.levelRecalculated) return; // 只重算一次
+  if (data.levelRecalculated) return;
+  data.levelRecalculated = true;
 
-  var correctLevel = getLevelFromXP(data.totalXP).level;
-  var oldLevel = data.level;
-
-  // 计算正确等级下应有的抽奖总次数
-  var correctTotalLottery = 0;
-  for (var lv = 2; lv <= correctLevel; lv++) {
-    correctTotalLottery += getLotteryChancesForLevel(lv);
-  }
-  // 30天补偿的1次
-  if (data.lotteryCompensated) correctTotalLottery += getLotteryChancesForLevel(4);
-
-  // 当前剩余 + 已用 = 当前记录的总额
-  var currentTotal = data.lotteryChances + (data.lotteryUsed || 0);
-  var diff = currentTotal - correctTotalLottery;
-
-  if (correctLevel < oldLevel || diff > 0) {
-    data.level = correctLevel;
-    if (diff > 0) {
-      data.lotteryChances -= diff;
-      if (data.lotteryChances < 0) data.lotteryChances = 0;
-    }
-    data.levelRecalculated = true;
-    saveData();
-    setTimeout(function() {
-      var msg = '等级修正：Lv.' + oldLevel + ' → Lv.' + correctLevel;
-      if (diff > 0) {
-        msg += '，回收多发的 ' + diff + ' 次抽奖机会';
-      }
-      showToast('🔧 ' + msg);
-    }, 3000);
-  } else {
-    data.levelRecalculated = true;
-    saveData();
-  }
+  // 回收多发的100 XP
+  data.totalXP = Math.round((data.totalXP - 100) * 10) / 10;
+  // 等级按修正后的 XP 重算
+  data.level = getLevelFromXP(data.totalXP).level;
+  // 回收1次抽奖机会
+  if (data.lotteryChances > 0) data.lotteryChances--;
+  saveData();
 }
 
 function checkStreakMilestones() {
