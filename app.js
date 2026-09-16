@@ -460,8 +460,8 @@ function checkLotteryCompensation() {
 
 /* ===== 一次性重算：修正因刷XP导致的多余等级和抽奖 ===== */
 function recalcLevelAndLottery() {
-  if (data.levelRecalculated) return;
-  data.levelRecalculated = true;
+  if (data.levelRecalcV2) return;
+  data.levelRecalcV2 = true;
 
   // 回收多发的100 XP
   data.totalXP = Math.round((data.totalXP - 100) * 10) / 10;
