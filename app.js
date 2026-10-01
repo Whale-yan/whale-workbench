@@ -366,9 +366,8 @@ function getLevelInfo(level) {
 }
 
 function getXpForLevel(level) {
-  // 从 level 升到 level+1 所需XP
-  var tier = Math.floor((level - 1) / 10); // 0, 1, 2, ...
-  return (tier + 1) * 100;
+  // 每级固定100XP
+  return 100;
 }
 
 function getLevelFromXP(xp) {
