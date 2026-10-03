@@ -381,12 +381,9 @@ function getLevelFromXP(xp) {
 }
 
 function getLotteryChancesForLevel(level) {
-  // 每级抽奖次数 = 十位 + 1
-  var tier = Math.floor((level - 1) / 10);
-  var base = tier + 1;
-  // 整十级翻倍
-  if (level % 10 === 0) base *= 2;
-  return base;
+  // 每级1次抽奖，整十级2次
+  if (level % 10 === 0) return 2;
+  return 1;
 }
 
 function getShieldForLevel(level) {
